@@ -35,10 +35,12 @@ export async function GET(req: Request) {
               height: "56px",
               borderRadius: "16px",
               border: "4px solid #16a34a",
-              fontSize: "30px",
+              fontSize: "26px",
+              fontWeight: 900,
+              color: "#16a34a",
             }}
           >
-            ⚽
+            PP
           </div>
           <div
             style={{
@@ -69,7 +71,7 @@ export async function GET(req: Request) {
               {glory}
             </div>
             <div style={{ fontSize: "40px", color: "#a1a1aa" }}>
-              Glory · Level {level}
+              {`Glory · Level ${level}`}
             </div>
           </div>
         </div>
