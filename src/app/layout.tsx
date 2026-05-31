@@ -12,7 +12,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchperfect-sooty.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "PITCH PERFECT — out-predict your friends",
   description:
     "The free, real-time World Cup 2026 prediction game. Out-predict your friends, climb from nobody to legend. No money, pure glory.",

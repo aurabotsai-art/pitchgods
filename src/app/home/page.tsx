@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { ShareButton } from "@/components/ShareButton";
 import { setUsername, signOut } from "./actions";
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchperfect-sooty.vercel.app";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -56,6 +60,17 @@ export default async function HomePage() {
       >
         Leaderboard
       </Link>
+
+      {profile?.username && (
+        <div className="mt-3">
+          <ShareButton
+            url={`${SITE_URL}/u/${encodeURIComponent(profile.username)}`}
+            text={`I'm on ${profile.glory ?? 0} Glory in Pitch Perfect. Out-predict me 👀`}
+            label="Challenge a friend on WhatsApp"
+            variant="ghost"
+          />
+        </div>
+      )}
 
       <form action={setUsername} className="mt-8">
         <label className="text-sm font-medium text-zinc-300">
