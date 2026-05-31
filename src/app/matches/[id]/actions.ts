@@ -73,11 +73,32 @@ export async function savePredictions(fixtureId: number, picks: PickInput) {
 
   if (rows.length === 0) return { ok: false, error: "Make at least one pick." };
 
-  const { error } = await supabase
+  // Split into inserts (new pick types) and payload-only updates (existing ones).
+  // We intentionally avoid upsert: it requires table-wide UPDATE, but clients are
+  // only granted UPDATE on `payload` so they can't tamper with points/resolution.
+  const { data: existingRows } = await supabase
     .from("predictions")
-    .upsert(rows, { onConflict: "user_id,fixture_id,type_key" });
+    .select("type_key")
+    .eq("user_id", user.id)
+    .eq("fixture_id", fixtureId);
+  const existingKeys = new Set((existingRows ?? []).map((r) => r.type_key));
 
-  if (error) return { ok: false, error: error.message };
+  const toInsert = rows.filter((r) => !existingKeys.has(r.type_key));
+  const toUpdate = rows.filter((r) => existingKeys.has(r.type_key));
+
+  if (toInsert.length > 0) {
+    const { error } = await supabase.from("predictions").insert(toInsert);
+    if (error) return { ok: false, error: error.message };
+  }
+  for (const r of toUpdate) {
+    const { error } = await supabase
+      .from("predictions")
+      .update({ payload: r.payload })
+      .eq("user_id", user.id)
+      .eq("fixture_id", fixtureId)
+      .eq("type_key", r.type_key);
+    if (error) return { ok: false, error: error.message };
+  }
 
   revalidatePath(`/matches/${fixtureId}`);
   return { ok: true };
