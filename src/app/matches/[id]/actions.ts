@@ -100,6 +100,10 @@ export async function savePredictions(fixtureId: number, picks: PickInput) {
     if (error) return { ok: false, error: error.message };
   }
 
+  // Keep the daily play streak alive (server-side; clients can't write it).
+  await supabase.rpc("touch_streak");
+
   revalidatePath(`/matches/${fixtureId}`);
+  revalidatePath("/home");
   return { ok: true };
 }

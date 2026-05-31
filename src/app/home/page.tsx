@@ -44,7 +44,12 @@ export default async function HomePage() {
 
       <div className="mt-8 grid grid-cols-3 gap-3">
         <Stat label="Glory" value={profile?.glory ?? 0} accent="text-glory" />
-        <Stat label="Streak" value={profile?.streak_count ?? 0} accent="text-pitch" />
+        <Stat
+          label="Day streak"
+          value={profile?.streak_count ?? 0}
+          accent="text-pitch"
+          flame={(profile?.streak_count ?? 0) > 0}
+        />
         <Stat label="Level" value={profile?.level ?? 1} accent="text-zinc-200" />
       </div>
 
@@ -111,14 +116,18 @@ function Stat({
   label,
   value,
   accent,
+  flame = false,
 }: {
   label: string;
   value: number;
   accent: string;
+  flame?: boolean;
 }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-center">
-      <div className={`text-2xl font-black ${accent}`}>{value}</div>
+      <div className={`text-2xl font-black ${accent}`}>
+        {flame ? `🔥${value}` : value}
+      </div>
       <div className="mt-1 text-[11px] uppercase tracking-wide text-zinc-500">
         {label}
       </div>
