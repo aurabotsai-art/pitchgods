@@ -5,6 +5,7 @@ import { Flag } from "./Flag";
 export type Fixture = {
   id: number;
   group_name: string | null;
+  stage?: string | null;
   kickoff_at: string;
   home_name: string;
   away_name: string;
@@ -12,10 +13,29 @@ export type Fixture = {
   away_flag: string | null;
   home_slug: string | null;
   away_slug: string | null;
+  home_logo?: string | null;
+  away_logo?: string | null;
   status: string;
   score_home: number | null;
   score_away: number | null;
 };
+
+const STAGE_LABEL: Record<string, string> = {
+  group: "Group stage",
+  r16: "Round of 16",
+  qf: "Quarter-final",
+  sf: "Semi-final",
+  "3rd": "Third place",
+  final: "Final",
+};
+
+export function stageOrGroup(f: {
+  group_name: string | null;
+  stage?: string | null;
+}): string {
+  if (f.group_name) return `Group ${f.group_name}`;
+  return STAGE_LABEL[f.stage ?? ""] ?? "Match";
+}
 
 export function FixtureCard({ f }: { f: Fixture }) {
   const live = f.status === "live";
@@ -29,7 +49,7 @@ export function FixtureCard({ f }: { f: Fixture }) {
       className="block rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition active:scale-[0.99] hover:border-pitch/40"
     >
       <div className="flex items-center justify-between text-[11px] uppercase tracking-wide text-zinc-500">
-        <span>Group {f.group_name}</span>
+        <span>{stageOrGroup(f)}</span>
         {live ? (
           <span className="flex items-center gap-1 font-bold text-red-400">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-red-400" />
@@ -42,7 +62,7 @@ export function FixtureCard({ f }: { f: Fixture }) {
         )}
       </div>
       <div className="mt-3 flex items-center justify-between gap-2">
-        <Team flag={f.home_flag} slug={f.home_slug} name={f.home_name} />
+        <Team flag={f.home_flag} slug={f.home_slug} logo={f.home_logo} name={f.home_name} />
         {showScore ? (
           <span className="px-2 text-base font-black tabular-nums">
             {f.score_home}–{f.score_away}
@@ -50,7 +70,13 @@ export function FixtureCard({ f }: { f: Fixture }) {
         ) : (
           <span className="px-2 text-xs font-bold text-zinc-600">vs</span>
         )}
-        <Team flag={f.away_flag} slug={f.away_slug} name={f.away_name} align="right" />
+        <Team
+          flag={f.away_flag}
+          slug={f.away_slug}
+          logo={f.away_logo}
+          name={f.away_name}
+          align="right"
+        />
       </div>
     </Link>
   );
@@ -59,11 +85,13 @@ export function FixtureCard({ f }: { f: Fixture }) {
 function Team({
   flag,
   slug,
+  logo,
   name,
   align = "left",
 }: {
   flag: string | null;
   slug: string | null;
+  logo?: string | null;
   name: string;
   align?: "left" | "right";
 }) {
@@ -73,7 +101,7 @@ function Team({
         align === "right" ? "flex-row-reverse text-right" : ""
       }`}
     >
-      <Flag slug={slug} emoji={flag} size={26} />
+      <Flag slug={slug} logo={logo} emoji={flag} size={26} />
       <span className="truncate text-sm font-semibold">{name}</span>
     </div>
   );

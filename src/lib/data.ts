@@ -6,6 +6,7 @@ export type Team = {
   name: string;
   flag: string | null;
   flag_slug: string | null;
+  logo: string | null;
 };
 
 export type FixtureRow = {
@@ -29,7 +30,9 @@ const FIXTURE_COLS =
 export const getTeams = unstable_cache(
   async (): Promise<Team[]> => {
     const sb = createPublicClient();
-    const { data } = await sb.from("teams").select("code, name, flag, flag_slug");
+    const { data } = await sb
+      .from("teams")
+      .select("code, name, flag, flag_slug, logo");
     return (data ?? []) as Team[];
   },
   ["teams"],

@@ -1,9 +1,11 @@
 export function Flag({
   slug,
+  logo,
   emoji,
   size = 28,
 }: {
   slug?: string | null;
+  logo?: string | null;
   emoji?: string | null;
   size?: number;
 }) {
@@ -21,6 +23,21 @@ export function Flag({
         decoding="async"
         className="rounded-sm object-cover ring-1 ring-white/10"
         style={{ width: size, height: h }}
+      />
+    );
+  }
+  if (logo) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={logo}
+        width={size}
+        height={size}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        className="object-contain"
+        style={{ width: size, height: size }}
       />
     );
   }

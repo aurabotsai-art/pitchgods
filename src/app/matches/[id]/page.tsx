@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getFixture, getTeamsMap } from "@/lib/data";
 import { KickoffTime } from "@/components/KickoffTime";
 import { Flag } from "@/components/Flag";
+import { stageOrGroup } from "@/components/FixtureCard";
 import { PredictionForm, type ExistingPicks } from "@/components/PredictionForm";
 import { GuestButton } from "@/components/GuestButton";
 
@@ -99,7 +100,7 @@ export default async function MatchPage({
       </Link>
 
       <div className="mt-6 flex items-center justify-center gap-2 text-[11px] uppercase tracking-widest text-zinc-500">
-        <span>Group {f.group_name}</span>
+        <span>{stageOrGroup(f)}</span>
         <span>·</span>
         <KickoffTime iso={f.kickoff_at} />
         {locked && !finished && (
@@ -116,7 +117,7 @@ export default async function MatchPage({
 
       <div className="mt-4 flex items-center justify-center gap-4">
         <div className="flex flex-1 flex-col items-center gap-2">
-          <Flag slug={home?.flag_slug} emoji={home?.flag} size={56} />
+          <Flag slug={home?.flag_slug} logo={home?.logo} emoji={home?.flag} size={56} />
           <span className="text-center text-sm font-bold">{f.home_name}</span>
         </div>
         {finished ? (
@@ -127,7 +128,7 @@ export default async function MatchPage({
           <span className="text-xl font-black text-zinc-600">vs</span>
         )}
         <div className="flex flex-1 flex-col items-center gap-2">
-          <Flag slug={away?.flag_slug} emoji={away?.flag} size={56} />
+          <Flag slug={away?.flag_slug} logo={away?.logo} emoji={away?.flag} size={56} />
           <span className="text-center text-sm font-bold">{f.away_name}</span>
         </div>
       </div>

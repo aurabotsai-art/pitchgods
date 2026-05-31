@@ -7,20 +7,27 @@ export const revalidate = 30;
 export default async function MatchesPage() {
   const [fixtures, teamsMap] = await Promise.all([getFixtures(), getTeamsMap()]);
 
-  const cards: Fixture[] = fixtures.map((f) => ({
-    id: f.id,
-    group_name: f.group_name,
-    kickoff_at: f.kickoff_at,
-    home_name: f.home_name,
-    away_name: f.away_name,
-    home_flag: teamsMap.get(f.home_code ?? "")?.flag ?? null,
-    away_flag: teamsMap.get(f.away_code ?? "")?.flag ?? null,
-    home_slug: teamsMap.get(f.home_code ?? "")?.flag_slug ?? null,
-    away_slug: teamsMap.get(f.away_code ?? "")?.flag_slug ?? null,
-    status: f.status,
-    score_home: f.score_home,
-    score_away: f.score_away,
-  }));
+  const cards: Fixture[] = fixtures.map((f) => {
+    const h = teamsMap.get(f.home_code ?? "");
+    const a = teamsMap.get(f.away_code ?? "");
+    return {
+      id: f.id,
+      group_name: f.group_name,
+      stage: f.stage,
+      kickoff_at: f.kickoff_at,
+      home_name: f.home_name,
+      away_name: f.away_name,
+      home_flag: h?.flag ?? null,
+      away_flag: a?.flag ?? null,
+      home_slug: h?.flag_slug ?? null,
+      away_slug: a?.flag_slug ?? null,
+      home_logo: h?.logo ?? null,
+      away_logo: a?.logo ?? null,
+      status: f.status,
+      score_home: f.score_home,
+      score_away: f.score_away,
+    };
+  });
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-8">
