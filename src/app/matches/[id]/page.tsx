@@ -7,7 +7,31 @@ import { GuestButton } from "@/components/GuestButton";
 
 export const dynamic = "force-dynamic";
 
-type PredRow = { type_key: string; payload: Record<string, unknown> };
+type PredRow = {
+  type_key: string;
+  payload: Record<string, unknown>;
+  was_correct: boolean | null;
+  points_awarded: number;
+};
+
+const LABELS: Record<string, string> = {
+  result: "Result",
+  exact_score: "Exact",
+  btts: "BTTS",
+  total_goals: "Total goals",
+  first_scorer: "First scorer",
+  bold_call: "Bold call",
+};
+
+function payloadLabel(type: string, p: Record<string, unknown>): string {
+  if (type === "result") return String(p.pick ?? "");
+  if (type === "exact_score") return `${p.home}–${p.away}`;
+  if (type === "btts") return String(p.pick ?? "");
+  if (type === "total_goals") return String(p.bucket ?? "");
+  if (type === "first_scorer") return String(p.player ?? "");
+  if (type === "bold_call") return String(p.text ?? "");
+  return "";
+}
 
 function toExisting(rows: PredRow[]): ExistingPicks {
   const e: ExistingPicks = {};
@@ -40,7 +64,7 @@ export default async function MatchPage({
   const { data: f } = await supabase
     .from("fixtures")
     .select(
-      "id, stage, group_name, kickoff_at, home_code, away_code, home_name, away_name, status",
+      "id, stage, group_name, kickoff_at, home_code, away_code, home_name, away_name, status, score_home, score_away, resolved",
     )
     .eq("id", fixtureId)
     .single();
@@ -57,17 +81,20 @@ export default async function MatchPage({
   const flagOf = new Map((teams ?? []).map((t) => [t.code, t.flag as string]));
 
   const locked = new Date(f.kickoff_at).getTime() <= Date.now();
+  const finished = f.status === "finished";
 
-  let existing: ExistingPicks = {};
+  let rows: PredRow[] = [];
   if (user) {
-    const { data: rows } = await supabase
+    const { data } = await supabase
       .from("predictions")
-      .select("type_key, payload")
+      .select("type_key, payload, was_correct, points_awarded")
       .eq("fixture_id", fixtureId)
       .eq("user_id", user.id);
-    existing = toExisting((rows ?? []) as PredRow[]);
+    rows = (data ?? []) as PredRow[];
   }
-  const hasPicks = Object.keys(existing).length > 0;
+  const existing = toExisting(rows);
+  const hasPicks = rows.length > 0;
+  const earned = rows.reduce((s, r) => s + (r.points_awarded ?? 0), 0);
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-8">
@@ -79,9 +106,14 @@ export default async function MatchPage({
         <span>Group {f.group_name}</span>
         <span>·</span>
         <KickoffTime iso={f.kickoff_at} />
-        {locked && (
+        {locked && !finished && (
           <span className="rounded-full border border-white/20 px-2 py-0.5 text-zinc-400">
             Locked
+          </span>
+        )}
+        {finished && (
+          <span className="rounded-full border border-white/20 px-2 py-0.5 text-zinc-400">
+            Full time
           </span>
         )}
       </div>
@@ -91,7 +123,13 @@ export default async function MatchPage({
           <span className="text-5xl">{flagOf.get(f.home_code ?? "") ?? "⚽"}</span>
           <span className="text-center text-sm font-bold">{f.home_name}</span>
         </div>
-        <span className="text-xl font-black text-zinc-600">vs</span>
+        {finished ? (
+          <span className="text-3xl font-black tabular-nums">
+            {f.score_home}–{f.score_away}
+          </span>
+        ) : (
+          <span className="text-xl font-black text-zinc-600">vs</span>
+        )}
         <div className="flex flex-1 flex-col items-center gap-2">
           <span className="text-5xl">{flagOf.get(f.away_code ?? "") ?? "⚽"}</span>
           <span className="text-center text-sm font-bold">{f.away_name}</span>
@@ -99,7 +137,7 @@ export default async function MatchPage({
       </div>
 
       {locked ? (
-        <LockedView existing={existing} hasPicks={hasPicks} />
+        <LockedView rows={rows} hasPicks={hasPicks} finished={finished} earned={earned} />
       ) : !user ? (
         <div className="mt-10 flex flex-col gap-3">
           <p className="text-center text-sm text-zinc-400">
@@ -120,11 +158,15 @@ export default async function MatchPage({
 }
 
 function LockedView({
-  existing,
+  rows,
   hasPicks,
+  finished,
+  earned,
 }: {
-  existing: ExistingPicks;
+  rows: PredRow[];
   hasPicks: boolean;
+  finished: boolean;
+  earned: number;
 }) {
   if (!hasPicks)
     return (
@@ -136,30 +178,36 @@ function LockedView({
       </div>
     );
 
-  const items: [string, string][] = [];
-  if (existing.result) items.push(["Result", existing.result]);
-  if (existing.exact_home != null)
-    items.push(["Exact", `${existing.exact_home}–${existing.exact_away}`]);
-  if (existing.btts) items.push(["BTTS", existing.btts]);
-  if (existing.total_goals) items.push(["Total goals", existing.total_goals]);
-  if (existing.first_scorer) items.push(["First scorer", existing.first_scorer]);
-  if (existing.bold_call) items.push(["Bold call", existing.bold_call]);
-
   return (
     <div className="mt-8">
-      <p className="mb-3 text-center text-sm font-semibold text-zinc-300">
-        Your locked picks
-      </p>
+      <div className="mb-3 flex items-center justify-between">
+        <p className="text-sm font-semibold text-zinc-300">Your picks</p>
+        {finished && (
+          <span className="text-sm font-black text-glory">+{earned} Glory</span>
+        )}
+      </div>
       <div className="flex flex-col gap-2">
-        {items.map(([k, v]) => (
+        {rows.map((r) => (
           <div
-            key={k}
+            key={r.type_key}
             className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
           >
             <span className="text-xs uppercase tracking-wide text-zinc-500">
-              {k}
+              {LABELS[r.type_key] ?? r.type_key}
             </span>
-            <span className="text-sm font-semibold capitalize">{v}</span>
+            <span className="flex items-center gap-2">
+              <span className="text-sm font-semibold capitalize">
+                {payloadLabel(r.type_key, r.payload)}
+              </span>
+              {finished && r.was_correct === true && (
+                <span className="text-sm font-bold text-pitch">
+                  ✓ +{r.points_awarded}
+                </span>
+              )}
+              {finished && r.was_correct === false && (
+                <span className="text-sm font-bold text-red-400">✗</span>
+              )}
+            </span>
           </div>
         ))}
       </div>
