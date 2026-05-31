@@ -7,6 +7,7 @@ import { Flag } from "@/components/Flag";
 import { stageOrGroup } from "@/components/FixtureCard";
 import { PredictionForm, type ExistingPicks } from "@/components/PredictionForm";
 import { GuestButton } from "@/components/GuestButton";
+import { LiveRoom } from "@/components/LiveRoom";
 
 export const dynamic = "force-dynamic";
 
@@ -93,6 +94,37 @@ export default async function MatchPage({
   const hasPicks = rows.length > 0;
   const earned = rows.reduce((s, r) => s + (r.points_awarded ?? 0), 0);
 
+  const isLive = f.status === "live";
+  let liveEvents: {
+    id: number;
+    minute: number | null;
+    type: string;
+    text: string;
+    created_at: string;
+  }[] = [];
+  let openPick: "home" | "away" | "none" | null = null;
+  if (isLive) {
+    const { data: evs } = await supabase
+      .from("match_events")
+      .select("id, minute, type, text, created_at")
+      .eq("fixture_id", fixtureId)
+      .order("created_at", { ascending: false })
+      .limit(40);
+    liveEvents = evs ?? [];
+    if (user) {
+      const { data: op } = await supabase
+        .from("live_predictions")
+        .select("payload")
+        .eq("user_id", user.id)
+        .eq("fixture_id", fixtureId)
+        .eq("kind", "next_goal")
+        .eq("resolved", false)
+        .maybeSingle();
+      openPick =
+        (op?.payload as { pick?: "home" | "away" | "none" } | null)?.pick ?? null;
+    }
+  }
+
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-8">
       <Link href="/matches" className="text-sm text-zinc-500" prefetch>
@@ -133,7 +165,18 @@ export default async function MatchPage({
         </div>
       </div>
 
-      {locked ? (
+      {isLive ? (
+        <LiveRoom
+          fixtureId={fixtureId}
+          homeName={f.home_name}
+          awayName={f.away_name}
+          initialScore={[f.score_home ?? 0, f.score_away ?? 0]}
+          initialMinute={f.minute ?? null}
+          initialEvents={liveEvents}
+          initialOpenPick={openPick}
+          signedIn={!!user}
+        />
+      ) : locked ? (
         <LockedView rows={rows} hasPicks={hasPicks} finished={finished} earned={earned} />
       ) : !user ? (
         <div className="mt-10 flex flex-col gap-3">

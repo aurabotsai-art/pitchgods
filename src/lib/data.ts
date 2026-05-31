@@ -21,10 +21,11 @@ export type FixtureRow = {
   status: string;
   score_home: number | null;
   score_away: number | null;
+  minute: number | null;
 };
 
 const FIXTURE_COLS =
-  "id, stage, group_name, kickoff_at, home_code, away_code, home_name, away_name, status, score_home, score_away";
+  "id, stage, group_name, kickoff_at, home_code, away_code, home_name, away_name, status, score_home, score_away, minute";
 
 // Teams change almost never -> cache long.
 export const getTeams = unstable_cache(
