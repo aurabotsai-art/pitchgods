@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { setUsername, signOut } from "./actions";
@@ -43,7 +44,14 @@ export default async function HomePage() {
         <Stat label="Level" value={profile?.level ?? 1} accent="text-zinc-200" />
       </div>
 
-      <form action={setUsername} className="mt-10">
+      <Link
+        href="/matches"
+        className="mt-8 flex h-14 w-full items-center justify-center rounded-2xl bg-pitch text-base font-bold text-black transition active:scale-[0.98]"
+      >
+        Today&apos;s matches →
+      </Link>
+
+      <form action={setUsername} className="mt-8">
         <label className="text-sm font-medium text-zinc-300">
           Pick your manager name
         </label>
