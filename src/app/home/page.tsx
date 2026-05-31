@@ -50,6 +50,12 @@ export default async function HomePage() {
       >
         Today&apos;s matches →
       </Link>
+      <Link
+        href="/leaderboard"
+        className="mt-3 flex h-14 w-full items-center justify-center rounded-2xl border border-white/15 text-base font-semibold text-zinc-200 transition active:scale-[0.98]"
+      >
+        Leaderboard
+      </Link>
 
       <form action={setUsername} className="mt-8">
         <label className="text-sm font-medium text-zinc-300">
