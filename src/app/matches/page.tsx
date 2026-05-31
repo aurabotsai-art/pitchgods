@@ -1,39 +1,31 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { getFixtures, getTeamsMap } from "@/lib/data";
 import { FixtureCard, type Fixture } from "@/components/FixtureCard";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 30;
 
 export default async function MatchesPage() {
-  const supabase = await createClient();
+  const [fixtures, teamsMap] = await Promise.all([getFixtures(), getTeamsMap()]);
 
-  const [{ data: fixtures }, { data: teams }] = await Promise.all([
-    supabase
-      .from("fixtures")
-      .select(
-        "id, group_name, kickoff_at, home_code, away_code, home_name, away_name, status",
-      )
-      .order("kickoff_at", { ascending: true }),
-    supabase.from("teams").select("code, flag"),
-  ]);
-
-  const flagOf = new Map((teams ?? []).map((t) => [t.code, t.flag as string]));
-
-  const cards: Fixture[] = (fixtures ?? []).map((f) => ({
+  const cards: Fixture[] = fixtures.map((f) => ({
     id: f.id,
     group_name: f.group_name,
     kickoff_at: f.kickoff_at,
     home_name: f.home_name,
     away_name: f.away_name,
-    home_flag: flagOf.get(f.home_code ?? "") ?? null,
-    away_flag: flagOf.get(f.away_code ?? "") ?? null,
+    home_flag: teamsMap.get(f.home_code ?? "")?.flag ?? null,
+    away_flag: teamsMap.get(f.away_code ?? "")?.flag ?? null,
+    home_slug: teamsMap.get(f.home_code ?? "")?.flag_slug ?? null,
+    away_slug: teamsMap.get(f.away_code ?? "")?.flag_slug ?? null,
     status: f.status,
+    score_home: f.score_home,
+    score_away: f.score_away,
   }));
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-8">
       <div className="flex items-center justify-between">
-        <Link href="/home" className="text-sm text-zinc-500">
+        <Link href="/home" className="text-sm text-zinc-500" prefetch>
           ← Home
         </Link>
         <span className="text-xs font-medium uppercase tracking-widest text-pitch">

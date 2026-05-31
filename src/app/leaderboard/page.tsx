@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getGlobalLeaderboard } from "@/lib/data";
 import { AddFriend } from "@/components/AddFriend";
 
 export const dynamic = "force-dynamic";
@@ -27,12 +28,7 @@ export default async function LeaderboardPage({
 
   let entries: Entry[] = [];
   if (scope === "global") {
-    const { data } = await supabase
-      .from("profiles")
-      .select("id, username, glory, level, flag_country")
-      .order("glory", { ascending: false })
-      .limit(50);
-    entries = (data ?? []) as Entry[];
+    entries = (await getGlobalLeaderboard()) as Entry[];
   } else if (user) {
     const { data: fr } = await supabase
       .from("friendships")

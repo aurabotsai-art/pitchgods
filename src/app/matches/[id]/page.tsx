@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getFixture, getTeamsMap } from "@/lib/data";
 import { KickoffTime } from "@/components/KickoffTime";
+import { Flag } from "@/components/Flag";
 import { PredictionForm, type ExistingPicks } from "@/components/PredictionForm";
 import { GuestButton } from "@/components/GuestButton";
 
@@ -61,24 +63,18 @@ export default async function MatchPage({
   if (!Number.isFinite(fixtureId)) notFound();
 
   const supabase = await createClient();
-  const { data: f } = await supabase
-    .from("fixtures")
-    .select(
-      "id, stage, group_name, kickoff_at, home_code, away_code, home_name, away_name, status, score_home, score_away, resolved",
-    )
-    .eq("id", fixtureId)
-    .single();
+
+  // Public, cached match + flags run in parallel with the per-user auth check.
+  const [f, teamsMap, userRes] = await Promise.all([
+    getFixture(fixtureId),
+    getTeamsMap(),
+    supabase.auth.getUser(),
+  ]);
   if (!f) notFound();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { data: teams } = await supabase
-    .from("teams")
-    .select("code, flag")
-    .in("code", [f.home_code, f.away_code].filter(Boolean) as string[]);
-  const flagOf = new Map((teams ?? []).map((t) => [t.code, t.flag as string]));
+  const user = userRes.data.user;
+  const home = teamsMap.get(f.home_code ?? "");
+  const away = teamsMap.get(f.away_code ?? "");
 
   const locked = new Date(f.kickoff_at).getTime() <= Date.now();
   const finished = f.status === "finished";
@@ -98,7 +94,7 @@ export default async function MatchPage({
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-8">
-      <Link href="/matches" className="text-sm text-zinc-500">
+      <Link href="/matches" className="text-sm text-zinc-500" prefetch>
         ← Matches
       </Link>
 
@@ -120,7 +116,7 @@ export default async function MatchPage({
 
       <div className="mt-4 flex items-center justify-center gap-4">
         <div className="flex flex-1 flex-col items-center gap-2">
-          <span className="text-5xl">{flagOf.get(f.home_code ?? "") ?? "⚽"}</span>
+          <Flag slug={home?.flag_slug} emoji={home?.flag} size={56} />
           <span className="text-center text-sm font-bold">{f.home_name}</span>
         </div>
         {finished ? (
@@ -131,7 +127,7 @@ export default async function MatchPage({
           <span className="text-xl font-black text-zinc-600">vs</span>
         )}
         <div className="flex flex-1 flex-col items-center gap-2">
-          <span className="text-5xl">{flagOf.get(f.away_code ?? "") ?? "⚽"}</span>
+          <Flag slug={away?.flag_slug} emoji={away?.flag} size={56} />
           <span className="text-center text-sm font-bold">{f.away_name}</span>
         </div>
       </div>
