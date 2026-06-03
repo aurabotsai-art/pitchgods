@@ -135,6 +135,33 @@ export const getActiveHotTake = unstable_cache(
   { revalidate: 15, tags: ["hot-takes"] },
 );
 
+export type CountryRow = { code: string; glory: number; players: number };
+
+export const getCountryLeaderboard = unstable_cache(
+  async (): Promise<CountryRow[]> => {
+    const sb = createPublicClient();
+    const { data } = await sb
+      .from("profiles")
+      .select("flag_country, glory")
+      .not("flag_country", "is", null);
+    const map = new Map<string, { glory: number; players: number }>();
+    for (const r of data ?? []) {
+      const c = r.flag_country as string;
+      if (!c) continue;
+      const e = map.get(c) ?? { glory: 0, players: 0 };
+      e.glory += (r.glory as number) ?? 0;
+      e.players += 1;
+      map.set(c, e);
+    }
+    return [...map.entries()]
+      .map(([code, v]) => ({ code, ...v }))
+      .sort((a, b) => b.glory - a.glory)
+      .slice(0, 50);
+  },
+  ["country-leaderboard"],
+  { revalidate: 30, tags: ["leaderboard"] },
+);
+
 export type Sponsor = {
   id: number;
   name: string;

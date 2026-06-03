@@ -25,6 +25,17 @@ export async function signOut() {
   redirect("/");
 }
 
+export async function setCountry(code: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false };
+  await supabase.from("profiles").update({ flag_country: code }).eq("id", user.id);
+  revalidatePath("/home");
+  return { ok: true };
+}
+
 export async function buyStreakFreeze() {
   const supabase = await createClient();
   const {

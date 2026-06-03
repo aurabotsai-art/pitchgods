@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getGlobalLeaderboard } from "@/lib/data";
+import { getGlobalLeaderboard, getCountryLeaderboard, type CountryRow } from "@/lib/data";
 import { AddFriend } from "@/components/AddFriend";
 import { SponsorSlot } from "@/components/SponsorSlot";
+import { Flag } from "@/components/Flag";
+import { tierForGlory } from "@/lib/tiers";
+import { COUNTRY_NAME } from "@/lib/countries";
 
 export const dynamic = "force-dynamic";
 
@@ -20,7 +23,8 @@ export default async function LeaderboardPage({
   searchParams: Promise<{ scope?: string }>;
 }) {
   const sp = await searchParams;
-  const scope = sp.scope === "global" ? "global" : "friends";
+  const scope =
+    sp.scope === "global" ? "global" : sp.scope === "country" ? "country" : "friends";
 
   const supabase = await createClient();
   const {
@@ -28,7 +32,10 @@ export default async function LeaderboardPage({
   } = await supabase.auth.getUser();
 
   let entries: Entry[] = [];
-  if (scope === "global") {
+  let countries: CountryRow[] = [];
+  if (scope === "country") {
+    countries = await getCountryLeaderboard();
+  } else if (scope === "global") {
     entries = (await getGlobalLeaderboard()) as Entry[];
   } else if (user) {
     const { data: fr } = await supabase
@@ -59,22 +66,33 @@ export default async function LeaderboardPage({
         <SponsorSlot slot="leaderboard" />
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-2">
+      <div className="mt-5 grid grid-cols-3 gap-2">
         <Tab href="/leaderboard?scope=friends" active={scope === "friends"}>
           Friends
         </Tab>
         <Tab href="/leaderboard?scope=global" active={scope === "global"}>
           Global
         </Tab>
+        <Tab href="/leaderboard?scope=country" active={scope === "country"}>
+          Country
+        </Tab>
       </div>
 
       <div className="mt-5 flex flex-col gap-2">
-        {entries.length === 0 ? (
-          <p className="py-8 text-center text-sm text-zinc-500">
-            {scope === "friends"
-              ? "No friends yet. Add one below to start the rivalry."
-              : "No managers ranked yet."}
-          </p>
+        {scope === "country" ? (
+          countries.length === 0 ? (
+            <Empty text="No countries ranked yet. Set yours on the home screen!" />
+          ) : (
+            countries.map((c, i) => <CountryRowView key={c.code} c={c} rank={i + 1} />)
+          )
+        ) : entries.length === 0 ? (
+          <Empty
+            text={
+              scope === "friends"
+                ? "No friends yet. Add one below to start the rivalry."
+                : "No managers ranked yet."
+            }
+          />
         ) : (
           entries.map((e, i) => (
             <Row key={e.id} e={e} rank={i + 1} isMe={e.id === user?.id} />
@@ -83,7 +101,7 @@ export default async function LeaderboardPage({
       </div>
 
       {scope === "friends" && user && <AddFriend />}
-      {!user && (
+      {!user && scope !== "country" && (
         <p className="mt-6 text-center text-sm text-zinc-500">
           <Link href="/" className="text-pitch underline">
             Play as guest
@@ -93,6 +111,10 @@ export default async function LeaderboardPage({
       )}
     </main>
   );
+}
+
+function Empty({ text }: { text: string }) {
+  return <p className="py-8 text-center text-sm text-zinc-500">{text}</p>;
 }
 
 function Tab({
@@ -108,9 +130,7 @@ function Tab({
     <Link
       href={href}
       className={`flex h-11 items-center justify-center rounded-xl text-sm font-semibold transition ${
-        active
-          ? "bg-pitch text-black"
-          : "border border-white/15 bg-white/5 text-zinc-300"
+        active ? "bg-pitch text-black" : "border border-white/15 bg-white/5 text-zinc-300"
       }`}
     >
       {children}
@@ -120,22 +140,38 @@ function Tab({
 
 function Row({ e, rank, isMe }: { e: Entry; rank: number; isMe: boolean }) {
   const name = e.username ?? "Guest manager";
+  const tier = tierForGlory(e.glory);
   return (
     <div
       className={`flex items-center gap-3 rounded-xl border px-4 py-3 ${
         isMe ? "border-pitch/50 bg-pitch/10" : "border-white/10 bg-white/[0.03]"
       }`}
     >
-      <span className="w-6 text-center text-sm font-black text-zinc-500">
-        {rank}
+      <span className="w-6 text-center text-sm font-black text-zinc-500">{rank}</span>
+      {e.flag_country && <Flag slug={e.flag_country} size={18} />}
+      <span className="min-w-0 flex-1 truncate">
+        <span className="text-sm font-semibold">
+          {name} {isMe && <span className="text-xs text-pitch">(you)</span>}
+        </span>
+        <span className="block text-[10px] uppercase tracking-wide text-zinc-500">
+          {tier.name}
+        </span>
       </span>
+      <span className="w-16 text-right text-sm font-black text-glory">{e.glory}</span>
+    </div>
+  );
+}
+
+function CountryRowView({ c, rank }: { c: CountryRow; rank: number }) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+      <span className="w-6 text-center text-sm font-black text-zinc-500">{rank}</span>
+      <Flag slug={c.code} size={22} />
       <span className="flex-1 truncate text-sm font-semibold">
-        {name} {isMe && <span className="text-xs text-pitch">(you)</span>}
+        {COUNTRY_NAME.get(c.code) ?? c.code.toUpperCase()}
+        <span className="ml-1 text-xs text-zinc-500">· {c.players}</span>
       </span>
-      <span className="text-xs text-zinc-500">Lv {e.level}</span>
-      <span className="w-16 text-right text-sm font-black text-glory">
-        {e.glory}
-      </span>
+      <span className="w-16 text-right text-sm font-black text-glory">{c.glory}</span>
     </div>
   );
 }

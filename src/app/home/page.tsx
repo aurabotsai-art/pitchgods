@@ -7,6 +7,8 @@ import { ChaosBanner } from "@/components/ChaosBanner";
 import { HotTakeCard } from "@/components/HotTakeCard";
 import { getActiveHotTake } from "@/lib/data";
 import { StreakControls } from "@/components/StreakControls";
+import { CountryPicker } from "@/components/CountryPicker";
+import { tierForGlory } from "@/lib/tiers";
 import { setUsername, signOut } from "./actions";
 
 const SITE_URL =
@@ -21,7 +23,7 @@ export default async function HomePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, glory, coins, level, streak_count, hot_streak, streak_freezes, is_guest")
+    .select("username, glory, coins, level, streak_count, hot_streak, streak_freezes, flag_country, is_guest")
     .eq("id", user.id)
     .single();
 
@@ -55,9 +57,9 @@ export default async function HomePage() {
       <h1 className="mt-6 text-3xl font-black tracking-tight">
         Welcome, {name}.
       </h1>
-      <p className="mt-1 text-sm text-zinc-500">
-        Your World Cup legend starts here.
-      </p>
+      <div className="mt-2 inline-flex w-fit items-center gap-2 rounded-full border border-pitch/40 bg-pitch/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-pitch">
+        {tierForGlory(profile?.glory ?? 0).name}
+      </div>
 
       <div className="mt-8 grid grid-cols-3 gap-3">
         <Stat label="Glory" value={profile?.glory ?? 0} accent="text-glory" />
@@ -74,6 +76,8 @@ export default async function HomePage() {
         hotStreak={profile?.hot_streak ?? 0}
         freezes={profile?.streak_freezes ?? 0}
       />
+
+      <CountryPicker current={profile?.flag_country ?? null} />
 
       <div className="mt-6 flex flex-col gap-3">
         <ChaosBanner />
