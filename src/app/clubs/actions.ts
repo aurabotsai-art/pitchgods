@@ -43,6 +43,21 @@ export async function leaveClub(clubId: number) {
   return { ok: true };
 }
 
+export async function declareRaid(targetCode: string, fixtureId: number) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+  const { data, error } = await supabase.rpc("declare_raid", {
+    p_target_code: targetCode,
+    p_fixture_id: fixtureId,
+  });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/raids");
+  return data as { ok: boolean; raid_id?: number; error?: string };
+}
+
 export async function sendChat(
   scope: "club" | "room",
   scopeId: number,
