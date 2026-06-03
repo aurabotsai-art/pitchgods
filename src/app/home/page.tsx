@@ -139,9 +139,15 @@ export default async function HomePage() {
         </Link>
         <Link
           href="/raids"
-          className="col-span-2 flex h-14 items-center justify-center rounded-2xl border border-red-500/30 bg-red-500/5 text-base font-semibold text-red-300 transition active:scale-[0.98]"
+          className="flex h-14 items-center justify-center rounded-2xl border border-red-500/30 bg-red-500/5 text-base font-semibold text-red-300 transition active:scale-[0.98]"
         >
           ⚔️ Raids
+        </Link>
+        <Link
+          href="/hall"
+          className="flex h-14 items-center justify-center rounded-2xl border border-glory/30 bg-glory/5 text-base font-semibold text-glory transition active:scale-[0.98]"
+        >
+          🏛️ Hall
         </Link>
       </div>
       <Link
