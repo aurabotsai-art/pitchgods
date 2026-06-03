@@ -6,6 +6,7 @@ import { SponsorSlot } from "@/components/SponsorSlot";
 import { ChaosBanner } from "@/components/ChaosBanner";
 import { HotTakeCard } from "@/components/HotTakeCard";
 import { getActiveHotTake } from "@/lib/data";
+import { StreakControls } from "@/components/StreakControls";
 import { setUsername, signOut } from "./actions";
 
 const SITE_URL =
@@ -20,7 +21,7 @@ export default async function HomePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("username, glory, coins, level, streak_count, is_guest")
+    .select("username, glory, coins, level, streak_count, hot_streak, streak_freezes, is_guest")
     .eq("id", user.id)
     .single();
 
@@ -68,6 +69,11 @@ export default async function HomePage() {
         />
         <Stat label="Level" value={profile?.level ?? 1} accent="text-zinc-200" />
       </div>
+
+      <StreakControls
+        hotStreak={profile?.hot_streak ?? 0}
+        freezes={profile?.streak_freezes ?? 0}
+      />
 
       <div className="mt-6 flex flex-col gap-3">
         <ChaosBanner />

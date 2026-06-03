@@ -25,6 +25,18 @@ export async function signOut() {
   redirect("/");
 }
 
+export async function buyStreakFreeze() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+  const { data, error } = await supabase.rpc("buy_streak_freeze");
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/home");
+  return data as { ok: boolean; coins?: number; error?: string };
+}
+
 export async function voteHotTake(id: number, vote: boolean) {
   const supabase = await createClient();
   const {
