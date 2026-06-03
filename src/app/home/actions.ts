@@ -24,3 +24,23 @@ export async function signOut() {
   await supabase.auth.signOut();
   redirect("/");
 }
+
+export async function voteHotTake(id: number, vote: boolean) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Sign in to vote." };
+  const { data, error } = await supabase.rpc("vote_hot_take", {
+    p_id: id,
+    p_vote: vote,
+  });
+  if (error) return { ok: false, error: error.message };
+  return data as {
+    ok: boolean;
+    yes?: number;
+    no?: number;
+    mine?: boolean;
+    error?: string;
+  };
+}

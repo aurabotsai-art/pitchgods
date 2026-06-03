@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ShareButton } from "@/components/ShareButton";
 import { SponsorSlot } from "@/components/SponsorSlot";
+import { ChaosBanner } from "@/components/ChaosBanner";
+import { HotTakeCard } from "@/components/HotTakeCard";
+import { getActiveHotTake } from "@/lib/data";
 import { setUsername, signOut } from "./actions";
 
 const SITE_URL =
@@ -22,6 +25,18 @@ export default async function HomePage() {
     .single();
 
   const name = profile?.username ?? "Manager";
+
+  const hotTake = await getActiveHotTake();
+  let myVote: boolean | null = null;
+  if (hotTake) {
+    const { data: hv } = await supabase
+      .from("hot_take_votes")
+      .select("vote")
+      .eq("hot_take_id", hotTake.id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    myVote = hv?.vote ?? null;
+  }
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-10">
@@ -54,7 +69,21 @@ export default async function HomePage() {
         <Stat label="Level" value={profile?.level ?? 1} accent="text-zinc-200" />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 flex flex-col gap-3">
+        <ChaosBanner />
+        {hotTake && (
+          <HotTakeCard
+            id={hotTake.id}
+            question={hotTake.question}
+            yes={hotTake.yes}
+            no={hotTake.no}
+            myVote={myVote}
+            signedIn
+          />
+        )}
+      </div>
+
+      <div className="mt-3">
         <SponsorSlot slot="banner" />
       </div>
 

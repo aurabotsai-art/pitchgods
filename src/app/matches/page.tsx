@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getFixtures, getTeamsMap } from "@/lib/data";
 import { FixtureCard, type Fixture } from "@/components/FixtureCard";
 import { SponsorSlot } from "@/components/SponsorSlot";
+import { ChaosBanner } from "@/components/ChaosBanner";
 
 export const revalidate = 30;
 
@@ -46,7 +47,8 @@ export default async function MatchesPage() {
         Tap a match to lock your call before kickoff.
       </p>
 
-      <div className="mt-5">
+      <div className="mt-5 flex flex-col gap-3">
+        <ChaosBanner />
         <SponsorSlot slot="motd" />
       </div>
 

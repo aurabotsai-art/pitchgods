@@ -83,6 +83,58 @@ export type LbEntry = {
   flag_country: string | null;
 };
 
+export type Chaos = {
+  id: number;
+  multiplier: number;
+  title: string | null;
+  ends_at: string;
+  sponsor_name: string | null;
+};
+
+export const getActiveChaos = unstable_cache(
+  async (): Promise<Chaos | null> => {
+    const sb = createPublicClient();
+    const nowIso = new Date().toISOString();
+    const { data } = await sb
+      .from("events")
+      .select("id, multiplier, title, ends_at, sponsor_name")
+      .eq("type", "chaos_hour")
+      .lte("starts_at", nowIso)
+      .gte("ends_at", nowIso)
+      .order("multiplier", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return (data as Chaos | null) ?? null;
+  },
+  ["active-chaos"],
+  { revalidate: 15, tags: ["events"] },
+);
+
+export type HotTake = { id: number; question: string; yes: number; no: number };
+
+export const getActiveHotTake = unstable_cache(
+  async (): Promise<HotTake | null> => {
+    const sb = createPublicClient();
+    const { data: ht } = await sb
+      .from("hot_takes")
+      .select("id, question")
+      .eq("active", true)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!ht) return null;
+    const { data: votes } = await sb
+      .from("hot_take_votes")
+      .select("vote")
+      .eq("hot_take_id", ht.id);
+    const yes = (votes ?? []).filter((v) => v.vote).length;
+    const no = (votes ?? []).filter((v) => !v.vote).length;
+    return { id: ht.id, question: ht.question, yes, no };
+  },
+  ["active-hot-take"],
+  { revalidate: 15, tags: ["hot-takes"] },
+);
+
 export type Sponsor = {
   id: number;
   name: string;
