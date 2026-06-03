@@ -77,6 +77,12 @@ export default async function HomePage() {
         >
           🎉 Parades
         </Link>
+        <Link
+          href="/clubs"
+          className="col-span-2 flex h-14 items-center justify-center rounded-2xl border border-white/15 text-base font-semibold text-zinc-200 transition active:scale-[0.98]"
+        >
+          🛡️ Clubs
+        </Link>
       </div>
       <Link
         href="/shop"

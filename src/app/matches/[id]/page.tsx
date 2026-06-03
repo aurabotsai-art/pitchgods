@@ -103,14 +103,31 @@ export default async function MatchPage({
     created_at: string;
   }[] = [];
   let openPick: "home" | "away" | "none" | null = null;
+  let initialChat: {
+    id: number;
+    username: string | null;
+    body: string;
+    user_id: string;
+    created_at: string;
+  }[] = [];
   if (isLive) {
-    const { data: evs } = await supabase
-      .from("match_events")
-      .select("id, minute, type, text, created_at")
-      .eq("fixture_id", fixtureId)
-      .order("created_at", { ascending: false })
-      .limit(40);
+    const [{ data: evs }, { data: chat }] = await Promise.all([
+      supabase
+        .from("match_events")
+        .select("id, minute, type, text, created_at")
+        .eq("fixture_id", fixtureId)
+        .order("created_at", { ascending: false })
+        .limit(40),
+      supabase
+        .from("chat_messages")
+        .select("id, username, body, user_id, created_at")
+        .eq("scope", "room")
+        .eq("scope_id", fixtureId)
+        .order("created_at", { ascending: false })
+        .limit(50),
+    ]);
     liveEvents = evs ?? [];
+    initialChat = ((chat ?? []) as typeof initialChat).reverse();
     if (user) {
       const { data: op } = await supabase
         .from("live_predictions")
@@ -175,6 +192,8 @@ export default async function MatchPage({
           initialEvents={liveEvents}
           initialOpenPick={openPick}
           signedIn={!!user}
+          initialChat={initialChat}
+          meId={user?.id ?? null}
         />
       ) : locked ? (
         <LockedView rows={rows} hasPicks={hasPicks} finished={finished} earned={earned} />

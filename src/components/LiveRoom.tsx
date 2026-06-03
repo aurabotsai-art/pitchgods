@@ -5,6 +5,7 @@ import { useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { saveLivePrediction } from "@/app/matches/[id]/live-actions";
 import { GuestButton } from "@/components/GuestButton";
+import { ChatBox, type ChatMsg } from "@/components/ChatBox";
 
 type Ev = {
   id: number;
@@ -23,6 +24,8 @@ export function LiveRoom({
   initialEvents,
   initialOpenPick,
   signedIn,
+  initialChat,
+  meId,
 }: {
   fixtureId: number;
   homeName: string;
@@ -32,6 +35,8 @@ export function LiveRoom({
   initialEvents: Ev[];
   initialOpenPick: "home" | "away" | "none" | null;
   signedIn: boolean;
+  initialChat: ChatMsg[];
+  meId: string | null;
 }) {
   const [score, setScore] = useState(initialScore);
   const [minute, setMinute] = useState(initialMinute);
@@ -190,6 +195,19 @@ export function LiveRoom({
             ))
           )}
         </div>
+      </div>
+
+      <div className="mt-8">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+          Room chat
+        </p>
+        <ChatBox
+          scope="room"
+          scopeId={fixtureId}
+          initial={initialChat}
+          signedIn={signedIn}
+          meId={meId}
+        />
       </div>
     </div>
   );
