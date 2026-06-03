@@ -108,9 +108,15 @@ export default async function HomePage() {
         </Link>
         <Link
           href="/clubs"
-          className="col-span-2 flex h-14 items-center justify-center rounded-2xl border border-white/15 text-base font-semibold text-zinc-200 transition active:scale-[0.98]"
+          className="flex h-14 items-center justify-center rounded-2xl border border-white/15 text-base font-semibold text-zinc-200 transition active:scale-[0.98]"
         >
           🛡️ Clubs
+        </Link>
+        <Link
+          href="/predict"
+          className="flex h-14 items-center justify-center rounded-2xl border border-white/15 text-base font-semibold text-zinc-200 transition active:scale-[0.98]"
+        >
+          🏆 Big calls
         </Link>
       </div>
       <Link
