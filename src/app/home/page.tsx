@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ShareButton } from "@/components/ShareButton";
+import { SponsorSlot } from "@/components/SponsorSlot";
 import { setUsername, signOut } from "./actions";
 
 const SITE_URL =
@@ -53,9 +54,13 @@ export default async function HomePage() {
         <Stat label="Level" value={profile?.level ?? 1} accent="text-zinc-200" />
       </div>
 
+      <div className="mt-6">
+        <SponsorSlot slot="banner" />
+      </div>
+
       <Link
         href="/matches"
-        className="mt-8 flex h-14 w-full items-center justify-center rounded-2xl bg-pitch text-base font-bold text-black transition active:scale-[0.98]"
+        className="mt-6 flex h-14 w-full items-center justify-center rounded-2xl bg-pitch text-base font-bold text-black transition active:scale-[0.98]"
       >
         Today&apos;s matches →
       </Link>

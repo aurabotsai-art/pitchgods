@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getGlobalLeaderboard } from "@/lib/data";
 import { AddFriend } from "@/components/AddFriend";
+import { SponsorSlot } from "@/components/SponsorSlot";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,10 @@ export default async function LeaderboardPage({
         <span className="text-xs font-medium uppercase tracking-widest text-pitch">
           Leaderboard
         </span>
+      </div>
+
+      <div className="mt-5">
+        <SponsorSlot slot="leaderboard" />
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-2">

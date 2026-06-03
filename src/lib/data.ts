@@ -83,6 +83,34 @@ export type LbEntry = {
   flag_country: string | null;
 };
 
+export type Sponsor = {
+  id: number;
+  name: string;
+  slot: string;
+  logo_url: string | null;
+  link_url: string | null;
+  blurb: string | null;
+};
+
+export function getSponsor(slot: string): Promise<Sponsor | null> {
+  return unstable_cache(
+    async (): Promise<Sponsor | null> => {
+      const sb = createPublicClient();
+      const { data } = await sb
+        .from("sponsors")
+        .select("id, name, slot, logo_url, link_url, blurb")
+        .eq("slot", slot)
+        .eq("active", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return (data as Sponsor | null) ?? null;
+    },
+    ["sponsor", slot],
+    { revalidate: 60, tags: ["sponsors"] },
+  )();
+}
+
 export const getGlobalLeaderboard = unstable_cache(
   async (): Promise<LbEntry[]> => {
     const sb = createPublicClient();
