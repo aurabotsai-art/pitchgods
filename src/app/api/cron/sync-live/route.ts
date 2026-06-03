@@ -1,14 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import {
-  getLiveWcFixtures,
-  getFixtureEvents,
-  getFixtureById,
-  mapStatus,
-  eventText,
-  type AFFixture,
-  type AFEvent,
-} from "@/lib/apifootball";
+import { getWcMatches, mapStatus, type FDMatch } from "@/lib/footballdata";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -19,66 +11,16 @@ function authorized(req: NextRequest) {
   return req.headers.get("authorization") === `Bearer ${secret}`;
 }
 
-type DbFix = { id: number; ext_id: number; status: string };
-
-function eventKey(ev: AFEvent) {
-  return [
-    ev.type,
-    ev.detail,
-    ev.time.elapsed ?? 0,
-    ev.time.extra ?? 0,
-    ev.player?.name ?? "",
-    ev.team?.id ?? "",
-  ].join("|");
-}
-
-async function applyFixture(
-  admin: ReturnType<typeof createAdminClient>,
-  af: AFFixture,
-  dbFix: DbFix,
-) {
-  const status = mapStatus(af.fixture.status.short);
-  await admin
-    .from("fixtures")
-    .update({
-      status,
-      score_home: af.goals.home,
-      score_away: af.goals.away,
-      ht_home: af.score.halftime.home,
-      ht_away: af.score.halftime.away,
-      minute: af.fixture.status.elapsed,
-    })
-    .eq("id", dbFix.id);
-
-  // ingest events as commentary (skip if pre-match)
-  if (status !== "scheduled") {
-    let events: AFEvent[] = [];
-    try {
-      events = await getFixtureEvents(af.fixture.id);
-    } catch {
-      events = [];
-    }
-    if (events.length > 0) {
-      const rows = events.map((ev) => {
-        const { type, text } = eventText(ev);
-        return {
-          fixture_id: dbFix.id,
-          minute: ev.time.elapsed,
-          type,
-          team_code: ev.team?.id ? `AF${ev.team.id}` : null,
-          player: ev.player?.name ?? null,
-          detail: ev.detail,
-          text,
-          ext_key: eventKey(ev),
-        };
-      });
-      await admin
-        .from("match_events")
-        .upsert(rows, { onConflict: "fixture_id,ext_key", ignoreDuplicates: true });
-    }
-  }
-  return status;
-}
+type DbFix = {
+  id: number;
+  ext_id: number;
+  status: string;
+  score_home: number | null;
+  score_away: number | null;
+  home_code: string | null;
+  away_code: string | null;
+  resolved: boolean;
+};
 
 export async function GET(req: NextRequest) {
   if (!authorized(req))
@@ -86,51 +28,83 @@ export async function GET(req: NextRequest) {
 
   const admin = createAdminClient();
 
-  let live: AFFixture[] = [];
+  let matches: FDMatch[];
   try {
-    live = await getLiveWcFixtures();
+    matches = await getWcMatches();
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 502 });
   }
-  const liveExtIds = new Set(live.map((f) => f.fixture.id));
+  const byExt = new Map(matches.map((m) => [m.id, m]));
 
-  // our fixtures that are live OR that the API now reports live
   const { data: dbFixtures } = await admin
     .from("fixtures")
-    .select("id, ext_id, status")
-    .or(
-      `status.eq.live,ext_id.in.(${[...liveExtIds].join(",") || "0"})`,
-    );
-  const byExt = new Map<number, DbFix>(
-    (dbFixtures ?? []).map((d) => [d.ext_id as number, d as DbFix]),
-  );
+    .select("id, ext_id, status, score_home, score_away, home_code, away_code, resolved")
+    .not("ext_id", "is", null)
+    .eq("resolved", false);
 
   let updated = 0;
-  let finished = 0;
+  let goals = 0;
 
-  // 1) update everything the API says is live
-  for (const af of live) {
-    const dbFix = byExt.get(af.fixture.id);
-    if (!dbFix) continue; // fixture not in our DB yet (run sync-fixtures first)
-    await applyFixture(admin, af, dbFix);
+  for (const f of (dbFixtures ?? []) as DbFix[]) {
+    const m = byExt.get(f.ext_id);
+    if (!m) continue;
+    const status = mapStatus(m.status);
+    const nh = m.score.fullTime.home ?? f.score_home ?? 0;
+    const na = m.score.fullTime.away ?? f.score_away ?? 0;
+    const oh = f.score_home ?? 0;
+    const oa = f.score_away ?? 0;
+
+    const changed =
+      status !== f.status || nh !== oh || na !== oa;
+    if (!changed) continue;
+
+    // synthesize goal events from score deltas (free tier has no scorer)
+    const events: {
+      fixture_id: number;
+      minute: number | null;
+      type: string;
+      team_code: string | null;
+      text: string;
+      ext_key: string;
+    }[] = [];
+    for (let g = oh + 1; g <= nh; g++)
+      events.push({
+        fixture_id: f.id,
+        minute: m.minute ?? null,
+        type: "goal",
+        team_code: f.home_code,
+        text: `⚽ GOAL — home side! (${g}–${na})`,
+        ext_key: `g-home-${g}`,
+      });
+    for (let g = oa + 1; g <= na; g++)
+      events.push({
+        fixture_id: f.id,
+        minute: m.minute ?? null,
+        type: "goal",
+        team_code: f.away_code,
+        text: `⚽ GOAL — away side! (${nh}–${g})`,
+        ext_key: `g-away-${g}`,
+      });
+    if (events.length > 0) {
+      await admin
+        .from("match_events")
+        .upsert(events, { onConflict: "fixture_id,ext_key", ignoreDuplicates: true });
+      goals += events.length;
+    }
+
+    await admin
+      .from("fixtures")
+      .update({
+        status,
+        score_home: nh,
+        score_away: na,
+        ht_home: m.score.halfTime.home,
+        ht_away: m.score.halfTime.away,
+        minute: m.minute,
+      })
+      .eq("id", f.id);
     updated++;
   }
 
-  // 2) catch matches we think are live but API no longer lists (likely finished)
-  const stuck = (dbFixtures ?? []).filter(
-    (d) => d.status === "live" && !liveExtIds.has(d.ext_id as number),
-  ) as DbFix[];
-  for (const d of stuck) {
-    try {
-      const [af] = await getFixtureById(d.ext_id);
-      if (af) {
-        const st = await applyFixture(admin, af, d);
-        if (st === "finished") finished++;
-      }
-    } catch {
-      // ignore; retry next tick
-    }
-  }
-
-  return NextResponse.json({ ok: true, updated, finished });
+  return NextResponse.json({ ok: true, updated, goals });
 }

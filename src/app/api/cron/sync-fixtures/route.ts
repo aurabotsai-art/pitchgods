@@ -1,11 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
-  getWcFixtures,
+  getWcMatches,
   mapStatus,
+  mapStage,
+  groupLetter,
   flagSlugForName,
-  type AFFixture,
-} from "@/lib/apifootball";
+  type FDMatch,
+} from "@/lib/footballdata";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -16,47 +18,39 @@ function authorized(req: NextRequest) {
   return req.headers.get("authorization") === `Bearer ${secret}`;
 }
 
-function stageFromRound(round: string): string {
-  const r = round.toLowerCase();
-  if (r.includes("group")) return "group";
-  if (r.includes("16")) return "r16";
-  if (r.includes("quarter")) return "qf";
-  if (r.includes("semi")) return "sf";
-  if (r.includes("3rd") || r.includes("third")) return "3rd";
-  if (r.includes("final")) return "final";
-  return "group";
+function teamCode(t: FDMatch["homeTeam"]) {
+  return t.tla || (t.id ? `FD${t.id}` : null);
 }
 
 export async function GET(req: NextRequest) {
   if (!authorized(req))
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  let fixtures: AFFixture[];
+  let matches: FDMatch[];
   try {
-    fixtures = await getWcFixtures();
+    matches = await getWcMatches();
   } catch (e) {
-    return NextResponse.json(
-      { error: (e as Error).message },
-      { status: 502 },
-    );
+    return NextResponse.json({ error: (e as Error).message }, { status: 502 });
   }
+
+  // only matches with both teams known (skip TBD knockout slots)
+  const real = matches.filter((m) => m.homeTeam?.name && m.awayTeam?.name);
 
   const admin = createAdminClient();
 
-  // de-dupe teams across fixtures
   const teamMap = new Map<
-    number,
-    { code: string; ext_id: number; name: string; flag_slug: string | null; logo: string }
+    string,
+    { code: string; name: string; flag_slug: string | null; logo: string | null }
   >();
-  for (const f of fixtures) {
-    for (const t of [f.teams.home, f.teams.away]) {
-      if (!teamMap.has(t.id))
-        teamMap.set(t.id, {
-          code: `AF${t.id}`,
-          ext_id: t.id,
-          name: t.name,
+  for (const m of real) {
+    for (const t of [m.homeTeam, m.awayTeam]) {
+      const code = teamCode(t);
+      if (code && !teamMap.has(code))
+        teamMap.set(code, {
+          code,
+          name: t.name!,
           flag_slug: flagSlugForName(t.name),
-          logo: t.logo,
+          logo: t.crest,
         });
     }
   }
@@ -70,30 +64,29 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const fixtureRows = fixtures.map((f) => ({
-    ext_id: f.fixture.id,
-    stage: stageFromRound(f.league.round),
-    group_name: null as string | null,
-    kickoff_at: f.fixture.date,
-    home_code: `AF${f.teams.home.id}`,
-    away_code: `AF${f.teams.away.id}`,
-    home_name: f.teams.home.name,
-    away_name: f.teams.away.name,
-    status: mapStatus(f.fixture.status.short),
-    score_home: f.goals.home,
-    score_away: f.goals.away,
-    ht_home: f.score.halftime.home,
-    ht_away: f.score.halftime.away,
-    minute: f.fixture.status.elapsed,
+  const fixtureRows = real.map((m) => ({
+    ext_id: m.id,
+    stage: mapStage(m.stage),
+    group_name: groupLetter(m.group),
+    kickoff_at: m.utcDate,
+    home_code: teamCode(m.homeTeam),
+    away_code: teamCode(m.awayTeam),
+    home_name: m.homeTeam.name!,
+    away_name: m.awayTeam.name!,
+    status: mapStatus(m.status),
+    score_home: m.score.fullTime.home,
+    score_away: m.score.fullTime.away,
+    ht_home: m.score.halfTime.home,
+    ht_away: m.score.halfTime.away,
+    minute: m.minute,
   }));
 
   let upserted = 0;
-  // chunk to stay within payload limits
   for (let i = 0; i < fixtureRows.length; i += 100) {
     const chunk = fixtureRows.slice(i, i + 100);
     const { error } = await admin
       .from("fixtures")
-      .upsert(chunk, { onConflict: "ext_id", ignoreDuplicates: false });
+      .upsert(chunk, { onConflict: "ext_id" });
     if (error)
       return NextResponse.json({ error: error.message }, { status: 500 });
     upserted += chunk.length;
@@ -103,5 +96,6 @@ export async function GET(req: NextRequest) {
     ok: true,
     teams: teamRows.length,
     fixtures: upserted,
+    skipped_tbd: matches.length - real.length,
   });
 }
