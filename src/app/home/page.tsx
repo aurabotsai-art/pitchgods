@@ -73,6 +73,13 @@ export default async function HomePage() {
           🎉 Parades
         </Link>
       </div>
+      <Link
+        href="/shop"
+        className="mt-3 flex h-14 w-full items-center justify-between rounded-2xl border border-white/15 px-5 text-base font-semibold text-zinc-200 transition active:scale-[0.98]"
+      >
+        <span>🪙 Coin shop</span>
+        <span className="text-glory">{profile?.coins ?? 0} coins →</span>
+      </Link>
 
       {profile?.username && (
         <div className="mt-3">
