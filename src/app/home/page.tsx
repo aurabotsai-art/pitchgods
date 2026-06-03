@@ -18,32 +18,35 @@ const SITE_URL =
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/");
+  const { data: claimData } = await supabase.auth.getClaims();
+  const uid = (claimData?.claims?.sub as string | undefined) ?? null;
+  if (!uid) redirect("/");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("username, glory, coins, level, streak_count, hot_streak, streak_freezes, flag_country, is_guest")
-    .eq("id", user.id)
-    .single();
+  // independent reads in one parallel wave
+  const [{ data: profile }, hotTake, { data: rivalry }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select(
+        "username, glory, coins, level, streak_count, hot_streak, streak_freezes, flag_country, is_guest",
+      )
+      .eq("id", uid)
+      .single(),
+    getActiveHotTake(),
+    supabase.rpc("get_rivalry"),
+  ]);
 
   const name = profile?.username ?? "Manager";
 
-  const hotTake = await getActiveHotTake();
   let myVote: boolean | null = null;
   if (hotTake) {
     const { data: hv } = await supabase
       .from("hot_take_votes")
       .select("vote")
       .eq("hot_take_id", hotTake.id)
-      .eq("user_id", user.id)
+      .eq("user_id", uid)
       .maybeSingle();
     myVote = hv?.vote ?? null;
   }
-
-  const { data: rivalry } = await supabase.rpc("get_rivalry");
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-10">

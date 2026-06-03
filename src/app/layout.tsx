@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { preconnect, prefetchDNS } from "react-dom";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -36,6 +37,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // warm up the connections we hit on first paint
+  preconnect(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "");
+  preconnect("https://flagcdn.com");
+  prefetchDNS("https://flagcdn.com");
+
   return (
     <html
       lang="en"

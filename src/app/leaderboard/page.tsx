@@ -27,9 +27,8 @@ export default async function LeaderboardPage({
     sp.scope === "global" ? "global" : sp.scope === "country" ? "country" : "friends";
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: claimData } = await supabase.auth.getClaims();
+  const uid = (claimData?.claims?.sub as string | undefined) ?? null;
 
   let entries: Entry[] = [];
   let countries: CountryRow[] = [];
@@ -37,12 +36,12 @@ export default async function LeaderboardPage({
     countries = await getCountryLeaderboard();
   } else if (scope === "global") {
     entries = (await getGlobalLeaderboard()) as Entry[];
-  } else if (user) {
+  } else if (uid) {
     const { data: fr } = await supabase
       .from("friendships")
       .select("friend_id")
-      .eq("user_id", user.id);
-    const ids = [user.id, ...(fr ?? []).map((r) => r.friend_id as string)];
+      .eq("user_id", uid);
+    const ids = [uid, ...(fr ?? []).map((r) => r.friend_id as string)];
     const { data } = await supabase
       .from("profiles")
       .select("id, username, glory, level, flag_country")
@@ -95,13 +94,13 @@ export default async function LeaderboardPage({
           />
         ) : (
           entries.map((e, i) => (
-            <Row key={e.id} e={e} rank={i + 1} isMe={e.id === user?.id} />
+            <Row key={e.id} e={e} rank={i + 1} isMe={e.id === uid} />
           ))
         )}
       </div>
 
-      {scope === "friends" && user && <AddFriend />}
-      {!user && scope !== "country" && (
+      {scope === "friends" && uid && <AddFriend />}
+      {!uid && scope !== "country" && (
         <p className="mt-6 text-center text-sm text-zinc-500">
           <Link href="/" className="text-pitch underline">
             Play as guest

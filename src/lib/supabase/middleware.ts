@@ -25,8 +25,22 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // Touch the session so it stays fresh on every request.
-  await supabase.auth.getUser();
+  // Fast path: verify the JWT locally (no network). Only hit the auth server
+  // to refresh when the token is close to expiring. This avoids a Supabase
+  // round-trip on every single navigation.
+  try {
+    const { data } = await supabase.auth.getClaims();
+    const exp = (data?.claims as { exp?: number } | undefined)?.exp;
+    if (exp == null) {
+      // no/unverifiable session -> let getUser settle it (no network if no token)
+      await supabase.auth.getUser();
+    } else {
+      const secondsLeft = exp - Math.floor(Date.now() / 1000);
+      if (secondsLeft < 300) await supabase.auth.getUser(); // refresh window
+    }
+  } catch {
+    await supabase.auth.getUser();
+  }
 
   return response;
 }

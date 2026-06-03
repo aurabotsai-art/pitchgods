@@ -67,14 +67,14 @@ export default async function MatchPage({
   const supabase = await createClient();
 
   // Public, cached match + flags run in parallel with the per-user auth check.
-  const [f, teamsMap, userRes] = await Promise.all([
+  const [f, teamsMap, claimRes] = await Promise.all([
     getFixture(fixtureId),
     getTeamsMap(),
-    supabase.auth.getUser(),
+    supabase.auth.getClaims(),
   ]);
   if (!f) notFound();
 
-  const user = userRes.data.user;
+  const uid = (claimRes.data?.claims?.sub as string | undefined) ?? null;
   const home = teamsMap.get(f.home_code ?? "");
   const away = teamsMap.get(f.away_code ?? "");
 
@@ -82,12 +82,12 @@ export default async function MatchPage({
   const finished = f.status === "finished";
 
   let rows: PredRow[] = [];
-  if (user) {
+  if (uid) {
     const { data } = await supabase
       .from("predictions")
       .select("type_key, payload, was_correct, points_awarded")
       .eq("fixture_id", fixtureId)
-      .eq("user_id", user.id);
+      .eq("user_id", uid);
     rows = (data ?? []) as PredRow[];
   }
   const existing = toExisting(rows);
@@ -128,11 +128,11 @@ export default async function MatchPage({
     ]);
     liveEvents = evs ?? [];
     initialChat = ((chat ?? []) as typeof initialChat).reverse();
-    if (user) {
+    if (uid) {
       const { data: op } = await supabase
         .from("live_predictions")
         .select("payload")
-        .eq("user_id", user.id)
+        .eq("user_id", uid)
         .eq("fixture_id", fixtureId)
         .eq("kind", "next_goal")
         .eq("resolved", false)
@@ -191,13 +191,13 @@ export default async function MatchPage({
           initialMinute={f.minute ?? null}
           initialEvents={liveEvents}
           initialOpenPick={openPick}
-          signedIn={!!user}
+          signedIn={!!uid}
           initialChat={initialChat}
-          meId={user?.id ?? null}
+          meId={uid}
         />
       ) : locked ? (
         <LockedView rows={rows} hasPicks={hasPicks} finished={finished} earned={earned} />
-      ) : !user ? (
+      ) : !uid ? (
         <div className="mt-10 flex flex-col gap-3">
           <p className="text-center text-sm text-zinc-400">
             Make your call before kickoff.
