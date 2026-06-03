@@ -9,6 +9,7 @@ import { getActiveHotTake } from "@/lib/data";
 import { StreakControls } from "@/components/StreakControls";
 import { CountryPicker } from "@/components/CountryPicker";
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
+import { EnableNotifications } from "@/components/EnableNotifications";
 import { tierForGlory } from "@/lib/tiers";
 import { setUsername, signOut } from "./actions";
 
@@ -81,6 +82,8 @@ export default async function HomePage() {
       />
 
       <CountryPicker current={profile?.flag_country ?? null} />
+
+      <EnableNotifications />
 
       <div className="mt-6 flex flex-col gap-3">
         <ChaosBanner />
