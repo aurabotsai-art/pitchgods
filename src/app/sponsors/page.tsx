@@ -17,12 +17,22 @@ const SLOTS = [
   ["Shop reward partner", "Give vouchers, we send you customers. FREE.", "Easiest"],
 ];
 
-export default function SponsorsPage() {
+export default async function SponsorsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ ref?: string }>;
+}) {
+  const ref = (await searchParams).ref;
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-8">
       <Link href="/home" className="text-sm text-zinc-500">
         ← Back
       </Link>
+      {ref && (
+        <p className="mt-3 rounded-xl border border-pitch/30 bg-pitch/5 px-3 py-2 text-center text-xs text-pitch">
+          Referred by Agent {ref.toUpperCase().slice(0, 6)}
+        </p>
+      )}
 
       <h1 className="mt-5 text-3xl font-black leading-tight tracking-tight">
         Sponsor the <span className="text-pitch">World Cup</span> craze

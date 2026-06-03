@@ -85,6 +85,13 @@ export default async function HomePage() {
         <span>🪙 Coin shop</span>
         <span className="text-glory">{profile?.coins ?? 0} coins →</span>
       </Link>
+      <Link
+        href="/agent"
+        className="mt-3 flex h-14 w-full items-center justify-between rounded-2xl border border-pitch/30 bg-pitch/5 px-5 text-base font-semibold text-pitch transition active:scale-[0.98]"
+      >
+        <span>💸 Become an Agent</span>
+        <span className="text-xs text-zinc-400">earn 25–40% →</span>
+      </Link>
 
       {profile?.username && (
         <div className="mt-3">
