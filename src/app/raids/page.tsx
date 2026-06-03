@@ -9,9 +9,10 @@ export const dynamic = "force-dynamic";
 
 export default async function RaidsPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: claimData } = await supabase.auth.getClaims();
+  const user = claimData?.claims?.sub
+    ? { id: claimData.claims.sub as string }
+    : null;
 
   if (!user) {
     return (

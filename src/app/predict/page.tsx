@@ -7,9 +7,10 @@ export const dynamic = "force-dynamic";
 
 export default async function PredictPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: claimData } = await supabase.auth.getClaims();
+  const user = claimData?.claims?.sub
+    ? { id: claimData.claims.sub as string }
+    : null;
 
   const teams = (await getTeams()).sort((a, b) => a.name.localeCompare(b.name));
 

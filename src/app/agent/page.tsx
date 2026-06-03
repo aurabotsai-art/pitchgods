@@ -7,9 +7,10 @@ export const dynamic = "force-dynamic";
 
 export default async function AgentPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: claimData } = await supabase.auth.getClaims();
+  const user = claimData?.claims?.sub
+    ? { id: claimData.claims.sub as string }
+    : null;
 
   let agent: { code: string; total_earned: number } | null = null;
   let deals: Deal[] = [];

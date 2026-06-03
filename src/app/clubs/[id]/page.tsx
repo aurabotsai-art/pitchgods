@@ -18,9 +18,10 @@ export default async function ClubPage({
   if (!Number.isFinite(clubId)) notFound();
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: claimData } = await supabase.auth.getClaims();
+  const user = claimData?.claims?.sub
+    ? { id: claimData.claims.sub as string }
+    : null;
 
   const { data: club } = await supabase
     .from("clubs")
