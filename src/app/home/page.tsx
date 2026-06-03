@@ -8,6 +8,7 @@ import { HotTakeCard } from "@/components/HotTakeCard";
 import { getActiveHotTake } from "@/lib/data";
 import { StreakControls } from "@/components/StreakControls";
 import { CountryPicker } from "@/components/CountryPicker";
+import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
 import { tierForGlory } from "@/lib/tiers";
 import { setUsername, signOut } from "./actions";
 
@@ -40,6 +41,8 @@ export default async function HomePage() {
       .maybeSingle();
     myVote = hv?.vote ?? null;
   }
+
+  const { data: rivalry } = await supabase.rpc("get_rivalry");
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-10">
@@ -81,6 +84,9 @@ export default async function HomePage() {
 
       <div className="mt-6 flex flex-col gap-3">
         <ChaosBanner />
+        {rivalry?.rival && (
+          <RivalryCard data={rivalry as Rivalry} myName={name} />
+        )}
         {hotTake && (
           <HotTakeCard
             id={hotTake.id}
