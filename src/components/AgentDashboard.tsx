@@ -102,7 +102,7 @@ export function AgentPanel({
         <Money label="Pending" value={pendingEarned} accent="text-zinc-200" />
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="rounded-2xl surface p-4">
         <div className="flex items-center justify-between">
           <span className="text-xs uppercase tracking-wide text-zinc-500">
             Your agent code
@@ -143,7 +143,7 @@ export function AgentPanel({
             {deals.map((d) => (
               <div
                 key={d.id}
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
+                className="flex items-center justify-between rounded-xl surface px-4 py-3"
               >
                 <div className="min-w-0">
                   <div className="truncate text-sm font-semibold">
@@ -188,7 +188,7 @@ function Money({
   accent: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-center">
+    <div className="rounded-2xl surface p-4 text-center">
       <div className={`text-2xl font-black ${accent}`}>{value}</div>
       <div className="mt-1 text-[11px] uppercase tracking-wide text-zinc-500">
         {label}

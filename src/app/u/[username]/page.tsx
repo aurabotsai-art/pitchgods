@@ -77,7 +77,7 @@ export default async function PublicProfile({
         Pitch Gods
       </span>
 
-      <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-8 text-center">
+      <div className="mt-8 rounded-3xl surface p-8 text-center">
         <div className="text-sm text-zinc-400">Out-predict me.</div>
         <div className="mt-2 text-4xl font-black tracking-tight">
           {p.flag_country ? `${p.flag_country} ` : ""}

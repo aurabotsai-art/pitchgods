@@ -66,38 +66,41 @@ export function Landing() {
 
   return (
     <main className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-16">
-      <div
-        className="pointer-events-none absolute inset-0 opacity-30"
-        style={{
-          background:
-            "radial-gradient(60% 50% at 50% 0%, #052e16 0%, transparent 70%)",
-        }}
-      />
+      {/* floating glow orbs */}
+      <div className="pointer-events-none absolute -top-10 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-pitch/25 blur-[90px] animate-float" />
+      <div className="pointer-events-none absolute bottom-10 right-0 h-56 w-56 rounded-full bg-glory/15 blur-[90px]" />
+
       <div className="relative z-10 flex w-full max-w-md flex-col items-center text-center">
-        <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-pitch/40 bg-pitch/10 px-3 py-1 text-xs font-medium uppercase tracking-widest text-pitch">
-          World Cup 2026
+        <span className="chip animate-rise mb-7 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-pitch-bright">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-pitch-bright opacity-75" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-pitch-bright" />
+          </span>
+          World Cup 2026 · Live
         </span>
 
-        <h1 className="text-5xl font-black leading-[0.95] tracking-tight sm:text-6xl">
-          PITCH
+        <h1 className="animate-rise font-display text-[3.75rem] font-bold leading-[0.86] sm:text-7xl" style={{ animationDelay: "60ms" }}>
+          <span className="text-gradient-light">PITCH</span>
           <br />
-          <span className="text-pitch">GODS</span>
+          <span className="text-gradient-pitch [text-shadow:0_0_40px_rgba(47,224,126,0.45)]">
+            GODS
+          </span>
         </h1>
 
-        <p className="mt-6 text-lg leading-7 text-zinc-400">
+        <p className="animate-rise mt-6 text-lg leading-7 text-zinc-300" style={{ animationDelay: "140ms" }}>
           Out-predict your friends. Climb from nobody to national legend.
-          <span className="mt-2 block font-medium text-glory">
+          <span className="mt-2 block font-semibold text-gradient-glory">
             No money. Pure glory.
           </span>
         </p>
 
-        <div className="mt-10 flex w-full flex-col gap-3">
+        <div className="animate-rise mt-10 flex w-full flex-col gap-3" style={{ animationDelay: "220ms" }}>
           <button
             onClick={playAsGuest}
             disabled={loading}
-            className="h-14 w-full rounded-2xl bg-pitch text-base font-bold text-black transition active:scale-[0.98] disabled:opacity-60"
+            className="btn-pitch h-14 w-full rounded-2xl text-base disabled:opacity-60"
           >
-            {loading ? "Starting…" : "Play as guest"}
+            {loading ? "Starting…" : "Play as guest →"}
           </button>
           <Turnstile
             onToken={setCaptchaToken}
@@ -105,7 +108,7 @@ export function Landing() {
           />
           <button
             onClick={continueWithGoogle}
-            className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/5 text-base font-semibold text-zinc-100 transition active:scale-[0.98]"
+            className="btn-glass flex h-14 w-full items-center justify-center gap-3 rounded-2xl text-base"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1Z"/>
@@ -119,15 +122,15 @@ export function Landing() {
 
         {err && <p className="mt-4 text-sm text-red-400">{err}</p>}
 
-        <p className="mt-8 text-xs text-zinc-600">
+        <p className="mt-8 text-xs text-zinc-500">
           Play instantly — no signup. Convert later to keep your legend.
         </p>
-        <p className="mt-4 text-[11px] text-zinc-700">
-          <a href="/privacy" className="hover:text-zinc-500">
+        <p className="mt-4 text-[11px] text-zinc-600">
+          <a href="/privacy" className="hover:text-zinc-400">
             Privacy
           </a>{" "}
           ·{" "}
-          <a href="/terms" className="hover:text-zinc-500">
+          <a href="/terms" className="hover:text-zinc-400">
             Terms
           </a>{" "}
           · No betting. No money. Pure glory.

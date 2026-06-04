@@ -46,7 +46,7 @@ export function FixtureCard({ f }: { f: Fixture }) {
     <Link
       href={`/matches/${f.id}`}
       prefetch
-      className="block rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition active:scale-[0.99] hover:border-pitch/40"
+      className="block rounded-2xl surface p-4 transition active:scale-[0.99] hover:border-pitch/40"
     >
       <div className="flex items-center justify-between text-[11px] uppercase tracking-wide text-zinc-500">
         <span>{stageOrGroup(f)}</span>

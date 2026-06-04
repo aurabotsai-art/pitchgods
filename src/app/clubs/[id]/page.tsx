@@ -82,7 +82,7 @@ export default async function ClubPage({
       <div className="mt-4 grid grid-cols-3 gap-3 text-center">
         <Stat label="Club Glory" value={clubGlory} accent="text-glory" />
         <Stat label="Members" value={roster.length} accent="text-pitch" />
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+        <div className="rounded-2xl surface p-3">
           <div className="text-lg font-black tracking-widest text-zinc-200">
             {club.code}
           </div>
@@ -112,7 +112,7 @@ export default async function ClubPage({
           {roster.map((r, i) => (
             <div
               key={r.id}
-              className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5"
+              className="flex items-center gap-3 rounded-xl surface px-4 py-2.5"
             >
               <span className="w-5 text-center text-sm font-black text-zinc-500">
                 {i + 1}
@@ -157,7 +157,7 @@ function Stat({
   accent: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+    <div className="rounded-2xl surface p-3">
       <div className={`text-lg font-black ${accent}`}>{value}</div>
       <div className="mt-1 text-[10px] uppercase tracking-wide text-zinc-500">
         {label}

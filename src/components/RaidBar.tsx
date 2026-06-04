@@ -20,7 +20,7 @@ export function RaidBar({ r }: { r: RaidView }) {
   const resolved = r.status === "resolved";
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+    <div className="rounded-2xl surface p-4">
       <div className="flex items-center justify-between text-[11px] uppercase tracking-wide text-zinc-500">
         <span>{r.match}</span>
         {resolved ? (

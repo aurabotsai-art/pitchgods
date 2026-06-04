@@ -103,7 +103,7 @@ export default async function PartiesPage() {
                 <Link
                   key={p.id}
                   href={`/parties/${p.id}`}
-                  className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 transition active:scale-[0.99]"
+                  className="rounded-2xl surface px-4 py-3 transition active:scale-[0.99]"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{meta.icon}</span>

@@ -56,7 +56,7 @@ export default async function LeaguesPage() {
                 <Link
                   key={l.id}
                   href={`/leagues/${l.id}`}
-                  className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 transition active:scale-[0.99]"
+                  className="flex items-center gap-3 rounded-2xl surface px-4 py-3 transition active:scale-[0.99]"
                 >
                   <span className="text-2xl">🏆</span>
                   <span className="flex-1 truncate text-sm font-bold">

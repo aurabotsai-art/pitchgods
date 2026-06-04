@@ -109,7 +109,7 @@ export default async function HallPage() {
           topClubs.map((c, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5"
+              className="flex items-center gap-3 rounded-xl surface px-4 py-2.5"
             >
               <span className="text-2xl">{c.crest ?? "🛡️"}</span>
               <span className="flex-1 truncate text-sm font-bold">{c.name}</span>

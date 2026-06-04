@@ -6,7 +6,7 @@ export function SkelLine({ className = "" }: { className?: string }) {
 
 export function SkelCard() {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+    <div className="rounded-2xl surface p-4">
       <SkelLine className="h-3 w-24" />
       <div className="mt-4 flex items-center justify-between">
         <SkelLine className="h-5 w-28" />

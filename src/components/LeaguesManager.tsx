@@ -55,7 +55,7 @@ export function LeaguesManager() {
         </button>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="rounded-2xl surface p-4">
         <p className="text-sm font-bold">Join with a code</p>
         <div className="mt-3 flex gap-2">
           <input

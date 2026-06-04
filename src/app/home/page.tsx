@@ -52,21 +52,21 @@ export default async function HomePage() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-10">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase tracking-widest text-pitch">
+        <span className="font-display text-sm font-bold uppercase tracking-[0.2em] text-gradient-pitch">
           Pitch Gods
         </span>
         {profile?.is_guest && (
-          <span className="rounded-full border border-glory/40 bg-glory/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-glory">
+          <span className="chip px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-glory">
             Guest
           </span>
         )}
       </div>
 
-      <h1 className="mt-6 text-3xl font-black tracking-tight">
+      <h1 className="mt-6 text-3xl font-bold">
         Welcome,{" "}
         <UserName name={name} color={profile?.name_color} flair={profile?.flair} />.
       </h1>
-      <div className="mt-2 inline-flex w-fit items-center gap-2 rounded-full border border-pitch/40 bg-pitch/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-pitch">
+      <div className="chip mt-3 w-fit px-3 py-1 text-xs font-bold uppercase tracking-wide text-glory">
         {tierForGlory(profile?.glory ?? 0).name}
       </div>
 
@@ -113,13 +113,13 @@ export default async function HomePage() {
 
       <Link
         href="/matches"
-        className="mt-6 flex h-14 w-full items-center justify-center rounded-2xl bg-pitch text-base font-bold text-black transition active:scale-[0.98]"
+        className="btn-pitch mt-6 flex h-14 w-full items-center justify-center rounded-2xl text-base"
       >
         Today&apos;s matches →
       </Link>
       <Link
         href="/leagues"
-        className="mt-3 flex h-14 w-full items-center justify-between rounded-2xl border border-pitch/40 bg-pitch/10 px-5 text-base font-bold text-pitch transition active:scale-[0.98]"
+        className="card card-glow-pitch mt-3 flex h-14 w-full items-center justify-between px-5 text-base font-bold text-pitch-bright transition active:scale-[0.98]"
       >
         <span>🏆 Private leagues</span>
         <span className="text-xs font-medium text-zinc-400">
@@ -129,7 +129,7 @@ export default async function HomePage() {
       <div className="mt-3 grid grid-cols-2 gap-3">
         <Link
           href="/leaderboard"
-          className="flex h-14 items-center justify-center rounded-2xl border border-white/15 text-base font-semibold text-zinc-200 transition active:scale-[0.98]"
+          className="card flex h-14 items-center justify-center text-base font-semibold text-zinc-100 transition active:scale-[0.98]"
         >
           Leaderboard
         </Link>
@@ -147,13 +147,13 @@ export default async function HomePage() {
         </Link>
         <Link
           href="/clubs"
-          className="flex h-14 items-center justify-center rounded-2xl border border-white/15 text-base font-semibold text-zinc-200 transition active:scale-[0.98]"
+          className="card flex h-14 items-center justify-center text-base font-semibold text-zinc-100 transition active:scale-[0.98]"
         >
           🛡️ Clubs
         </Link>
         <Link
           href="/predict"
-          className="flex h-14 items-center justify-center rounded-2xl border border-white/15 text-base font-semibold text-zinc-200 transition active:scale-[0.98]"
+          className="card flex h-14 items-center justify-center text-base font-semibold text-zinc-100 transition active:scale-[0.98]"
         >
           🏆 Big calls
         </Link>
@@ -172,14 +172,14 @@ export default async function HomePage() {
       </div>
       <Link
         href="/shop"
-        className="mt-3 flex h-14 w-full items-center justify-between rounded-2xl border border-white/15 px-5 text-base font-semibold text-zinc-200 transition active:scale-[0.98]"
+        className="card mt-3 flex h-14 w-full items-center justify-between px-5 text-base font-semibold text-zinc-100 transition active:scale-[0.98]"
       >
         <span>🪙 Coin shop</span>
-        <span className="text-glory">{profile?.coins ?? 0} coins →</span>
+        <span className="font-display font-bold tabular-nums text-glory">{profile?.coins ?? 0} coins →</span>
       </Link>
       <Link
         href="/agent"
-        className="mt-3 flex h-14 w-full items-center justify-between rounded-2xl border border-pitch/30 bg-pitch/5 px-5 text-base font-semibold text-pitch transition active:scale-[0.98]"
+        className="card card-glow-glory mt-3 flex h-14 w-full items-center justify-between px-5 text-base font-semibold text-pitch-bright transition active:scale-[0.98]"
       >
         <span>💸 Become an Agent</span>
         <span className="text-xs text-zinc-400">earn 25–40% →</span>
@@ -243,11 +243,11 @@ function Stat({
   flame?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-center">
-      <div className={`text-2xl font-black ${accent}`}>
+    <div className="card p-4 text-center">
+      <div className={`font-display text-3xl font-bold tabular-nums ${accent}`}>
         {flame ? `🔥${value}` : value}
       </div>
-      <div className="mt-1 text-[11px] uppercase tracking-wide text-zinc-500">
+      <div className="mt-1 text-[10px] font-medium uppercase tracking-[0.15em] text-zinc-500">
         {label}
       </div>
     </div>

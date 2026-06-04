@@ -167,7 +167,7 @@ function Row({ e, rank, isMe }: { e: Entry; rank: number; isMe: boolean }) {
 
 function CountryRowView({ c, rank }: { c: CountryRow; rank: number }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+    <div className="flex items-center gap-3 rounded-xl surface px-4 py-3">
       <span className="w-6 text-center text-sm font-black text-zinc-500">{rank}</span>
       <Flag slug={c.code} size={22} />
       <span className="flex-1 truncate text-sm font-semibold">

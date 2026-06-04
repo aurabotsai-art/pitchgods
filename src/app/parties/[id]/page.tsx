@@ -101,7 +101,7 @@ export default async function PartyPage({
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm">
+      <div className="mt-5 flex flex-col gap-2 rounded-2xl surface p-4 text-sm">
         <Row label="📍 Where" value={party.location as string} />
         <Row
           label="🕒 When"
@@ -111,7 +111,7 @@ export default async function PartyPage({
       </div>
 
       {party.details && (
-        <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+        <div className="mt-3 rounded-2xl surface p-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
             The plan
           </p>
@@ -155,7 +155,7 @@ export default async function PartyPage({
             {attendees.map((a) => (
               <span
                 key={a.id}
-                className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold"
+                className="rounded-full surface px-3 py-1 text-xs font-semibold"
               >
                 <UserName name={a.username} color={a.name_color} flair={a.flair} />
                 {a.isHost && <span className="ml-1 text-glory">· host</span>}

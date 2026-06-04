@@ -249,7 +249,7 @@ function LockedView({
         {rows.map((r) => (
           <div
             key={r.type_key}
-            className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
+            className="flex items-center justify-between rounded-xl surface px-4 py-3"
           >
             <span className="text-xs uppercase tracking-wide text-zinc-500">
               {LABELS[r.type_key] ?? r.type_key}

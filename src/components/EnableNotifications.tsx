@@ -58,7 +58,7 @@ export function EnableNotifications() {
   if (state === "unsupported") return null;
   if (state === "on")
     return (
-      <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-center text-xs text-zinc-500">
+      <div className="mt-3 rounded-2xl surface px-4 py-3 text-center text-xs text-zinc-500">
         🔔 Notifications on — we&apos;ll nudge you before kickoff &amp; if your streak&apos;s at risk.
       </div>
     );

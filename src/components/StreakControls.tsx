@@ -42,7 +42,7 @@ export function StreakControls({
           </span>
         </div>
       )}
-      <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3">
+      <div className="flex items-center justify-between rounded-2xl surface px-4 py-3">
         <span className="text-sm text-zinc-300">
           ❄️ Streak freezes: <span className="font-bold">{count}</span>
         </span>

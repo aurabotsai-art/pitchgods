@@ -55,7 +55,7 @@ export default async function SponsorsPage({
         {SLOTS.map(([title, desc, tag]) => (
           <div
             key={title}
-            className="rounded-2xl border border-white/10 bg-white/[0.03] p-4"
+            className="rounded-2xl surface p-4"
           >
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold">{title}</span>
@@ -93,7 +93,7 @@ export default async function SponsorsPage({
 
 function Stat({ big, small }: { big: string; small: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+    <div className="rounded-2xl surface p-3">
       <div className="text-xl font-black text-glory">{big}</div>
       <div className="mt-1 text-[10px] leading-tight text-zinc-500">{small}</div>
     </div>
