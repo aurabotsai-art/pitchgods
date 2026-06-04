@@ -140,6 +140,12 @@ export default async function HomePage() {
           🎉 Parades
         </Link>
         <Link
+          href="/parties"
+          className="flex h-14 items-center justify-center rounded-2xl border border-glory/30 bg-glory/5 text-base font-semibold text-glory transition active:scale-[0.98]"
+        >
+          🎊 Parties
+        </Link>
+        <Link
           href="/clubs"
           className="flex h-14 items-center justify-center rounded-2xl border border-white/15 text-base font-semibold text-zinc-200 transition active:scale-[0.98]"
         >
