@@ -2,7 +2,8 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-// 1080x1080 Instagram carousel slide renderer.
+// 1080x1080 Instagram carousel slide renderer (Satori-safe: flex-only,
+// hex gradient stops, no absolute positioning).
 // Params: t=title, s=subtitle, k=kicker, i=index, n=total, v=variant(pitch|glory)
 export async function GET(req: Request) {
   const p = new URL(req.url).searchParams;
@@ -14,13 +15,12 @@ export async function GET(req: Request) {
   const gold = (p.get("v") ?? "pitch") === "glory";
 
   const accent = gold ? "#fbbf24" : "#2fe07e";
-  const glow = gold
-    ? "radial-gradient(820px 620px at 50% -8%, rgba(251,191,36,0.22) 0%, #070a08 60%)"
-    : "radial-gradient(820px 620px at 50% -8%, rgba(47,224,126,0.22) 0%, #070a08 60%)";
+  const bg = gold
+    ? "radial-gradient(820px 620px at 50% -8%, #4d3a0c 0%, #070a08 62%)"
+    : "radial-gradient(820px 620px at 50% -8%, #0c4d2e 0%, #070a08 62%)";
 
-  // size the headline to the text length so it always fits
   const L = title.length;
-  const titleSize = L <= 16 ? 132 : L <= 28 ? 104 : L <= 44 ? 82 : L <= 70 ? 64 : 52;
+  const titleSize = L <= 16 ? 128 : L <= 28 ? 104 : L <= 44 ? 82 : L <= 70 ? 64 : 52;
 
   return new ImageResponse(
     (
@@ -31,28 +31,13 @@ export async function GET(req: Request) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: glow,
-          padding: "84px",
+          background: bg,
+          padding: "88px",
           color: "#f4f7f4",
           fontFamily: "sans-serif",
         }}
       >
-        {/* giant faded index watermark */}
-        <div
-          style={{
-            position: "absolute",
-            top: "120px",
-            right: "60px",
-            fontSize: "420px",
-            fontWeight: 900,
-            color: "rgba(255,255,255,0.035)",
-            lineHeight: 1,
-          }}
-        >
-          {String(i).padStart(2, "0")}
-        </div>
-
-        {/* top row: wordmark + counter */}
+        {/* top: wordmark + counter */}
         <div
           style={{
             display: "flex",
@@ -60,17 +45,17 @@ export async function GET(req: Request) {
             justifyContent: "space-between",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                width: "52px",
-                height: "52px",
+                width: "56px",
+                height: "56px",
                 borderRadius: "14px",
                 border: `4px solid ${accent}`,
-                fontSize: "24px",
+                fontSize: "26px",
                 fontWeight: 900,
                 color: accent,
               }}
@@ -79,9 +64,9 @@ export async function GET(req: Request) {
             </div>
             <div
               style={{
-                fontSize: "26px",
+                fontSize: "28px",
                 fontWeight: 800,
-                letterSpacing: "5px",
+                letterSpacing: "6px",
                 color: accent,
               }}
             >
@@ -90,7 +75,7 @@ export async function GET(req: Request) {
           </div>
           <div
             style={{
-              fontSize: "26px",
+              fontSize: "28px",
               fontWeight: 800,
               letterSpacing: "3px",
               color: "#71717a",
@@ -101,14 +86,15 @@ export async function GET(req: Request) {
         </div>
 
         {/* center: kicker + title + subtitle */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
           <div
             style={{
               display: "flex",
-              fontSize: "30px",
+              fontSize: "32px",
               fontWeight: 800,
               letterSpacing: "5px",
               color: accent,
+              marginBottom: "30px",
             }}
           >
             {kicker.toUpperCase()}
@@ -118,26 +104,22 @@ export async function GET(req: Request) {
               display: "flex",
               fontSize: `${titleSize}px`,
               fontWeight: 900,
-              lineHeight: 1.02,
-              letterSpacing: "-1px",
+              lineHeight: 1.04,
             }}
           >
             {title}
           </div>
-          {subtitle ? (
-            <div
-              style={{
-                display: "flex",
-                fontSize: "40px",
-                lineHeight: 1.25,
-                color: "#c7ccc7",
-              }}
-            >
-              {subtitle}
-            </div>
-          ) : (
-            <div style={{ display: "flex" }} />
-          )}
+          <div
+            style={{
+              display: "flex",
+              fontSize: "42px",
+              lineHeight: 1.25,
+              color: "#c7ccc7",
+              marginTop: "30px",
+            }}
+          >
+            {subtitle}
+          </div>
         </div>
 
         {/* footer */}
@@ -146,14 +128,12 @@ export async function GET(req: Request) {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            borderTop: "2px solid rgba(255,255,255,0.08)",
-            paddingTop: "28px",
           }}
         >
-          <div style={{ fontSize: "28px", fontWeight: 700, color: "#f4f7f4" }}>
+          <div style={{ display: "flex", fontSize: "30px", fontWeight: 700, color: "#f4f7f4" }}>
             pitchgods.com
           </div>
-          <div style={{ fontSize: "26px", color: "#71717a" }}>
+          <div style={{ display: "flex", fontSize: "28px", color: "#71717a" }}>
             free · no betting · pure glory
           </div>
         </div>
