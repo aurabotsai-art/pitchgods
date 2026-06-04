@@ -11,6 +11,7 @@ import { CountryPicker } from "@/components/CountryPicker";
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
 import { EnableNotifications } from "@/components/EnableNotifications";
 import { UserName } from "@/components/UserName";
+import { ReferralClaim } from "@/components/ReferralClaim";
 import { tierForGlory } from "@/lib/tiers";
 import { setUsername, signOut } from "./actions";
 
@@ -51,6 +52,7 @@ export default async function HomePage() {
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-10">
+      <ReferralClaim />
       <div className="flex items-center justify-between">
         <span className="font-display text-sm font-bold uppercase tracking-[0.2em] text-gradient-pitch">
           Pitch Gods
@@ -188,9 +190,9 @@ export default async function HomePage() {
       {profile?.username && (
         <div className="mt-3">
           <ShareButton
-            url={`${SITE_URL}/u/${encodeURIComponent(profile.username)}`}
-            text={`I'm on ${profile.glory ?? 0} Glory in Pitch Gods. Out-predict me 👀`}
-            label="Challenge a friend on WhatsApp"
+            url={`${SITE_URL}/?ref=${encodeURIComponent(profile.username)}`}
+            text={`I'm on ${profile.glory ?? 0} Glory in Pitch Gods. Beat me this World Cup — we BOTH get 100 coins when you join 👀`}
+            label="Invite a friend (you both get 100 coins)"
             variant="ghost"
           />
         </div>

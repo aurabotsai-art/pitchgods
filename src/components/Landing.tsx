@@ -14,6 +14,11 @@ export function Landing() {
 
   // already signed in? bounce to the app (local cookie check, no network)
   useEffect(() => {
+    // capture referral code so we can reward both sides after signup
+    try {
+      const ref = new URLSearchParams(window.location.search).get("ref");
+      if (ref) localStorage.setItem("pg_ref", ref.slice(0, 24));
+    } catch {}
     const supabase = createClient();
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) router.replace("/home");
