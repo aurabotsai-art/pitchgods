@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Turnstile, captchaEnabled } from "./Turnstile";
 
 export function Landing() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
 
   // already signed in? bounce to the app (local cookie check, no network)
   useEffect(() => {
@@ -18,13 +20,21 @@ export function Landing() {
   }, [router]);
 
   async function playAsGuest() {
+    // If captcha is wired but the visitor hasn't passed yet, ask them to.
+    if (captchaEnabled && !captchaToken) {
+      setErr("Tick the box below to prove you're human, then tap again.");
+      return;
+    }
     setLoading(true);
     setErr(null);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInAnonymously();
+    const { error } = await supabase.auth.signInAnonymously(
+      captchaToken ? { options: { captchaToken } } : undefined,
+    );
     if (error) {
       setErr(error.message);
       setLoading(false);
+      setCaptchaToken(null); // force a fresh token on retry
       return;
     }
     router.push("/home");
@@ -89,6 +99,10 @@ export function Landing() {
           >
             {loading ? "Starting…" : "Play as guest"}
           </button>
+          <Turnstile
+            onToken={setCaptchaToken}
+            onExpire={() => setCaptchaToken(null)}
+          />
           <button
             onClick={continueWithGoogle}
             className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/5 text-base font-semibold text-zinc-100 transition active:scale-[0.98]"
