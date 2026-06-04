@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Pitch Perfect",
-    short_name: "PitchPerfect",
+    name: "The Gaffer",
+    short_name: "The Gaffer",
     description:
       "The free World Cup 2026 prediction game. Out-predict your friends, climb to legend.",
     start_url: "/",

@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sponsor Pitch Perfect — reach the World Cup craze",
+  title: "Sponsor The Gaffer — reach the World Cup craze",
   description:
     "Put your brand in front of thousands of young football fans during World Cup 2026. Sponsor slots + reward drops.",
 };
@@ -38,7 +38,7 @@ export default async function SponsorsPage({
         Sponsor the <span className="text-pitch">World Cup</span> craze
       </h1>
       <p className="mt-2 text-sm text-zinc-400">
-        Pitch Perfect puts your brand in front of thousands of young, football-mad
+        The Gaffer puts your brand in front of thousands of young, football-mad
         fans every match day — the exact audience you want this World Cup.
       </p>
 

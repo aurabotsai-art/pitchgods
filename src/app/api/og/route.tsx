@@ -40,7 +40,7 @@ export async function GET(req: Request) {
               color: "#16a34a",
             }}
           >
-            PP
+            TG
           </div>
           <div
             style={{
@@ -50,7 +50,7 @@ export async function GET(req: Request) {
               color: "#16a34a",
             }}
           >
-            PITCH PERFECT
+            THE GAFFER
           </div>
         </div>
 

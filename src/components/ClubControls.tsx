@@ -34,7 +34,7 @@ export function ClubControls({
     <div className="mt-4 flex flex-col gap-2">
       <ShareButton
         url={`${SITE_URL}/clubs`}
-        text={`Join my Pitch Perfect club "${name}" — code ${code} 🛡️`}
+        text={`Join my The Gaffer club "${name}" — code ${code} 🛡️`}
         label="Invite to club (WhatsApp)"
       />
       {isMember && (

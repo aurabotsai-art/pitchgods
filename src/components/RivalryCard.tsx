@@ -62,8 +62,8 @@ export function RivalryCard({
           url={SITE_URL}
           text={
             ahead
-              ? `I'm beating ${rival.name} ${mw}–${tw} in Pitch Perfect ⚔️ catch me if you can`
-              : `${rival.name} is ahead of me in Pitch Perfect... not for long 😤 come watch the revenge`
+              ? `I'm beating ${rival.name} ${mw}–${tw} in The Gaffer ⚔️ catch me if you can`
+              : `${rival.name} is ahead of me in The Gaffer... not for long 😤 come watch the revenge`
           }
           label="Talk trash (WhatsApp)"
           variant="ghost"
