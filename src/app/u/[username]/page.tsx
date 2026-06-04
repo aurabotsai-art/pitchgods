@@ -37,9 +37,9 @@ export async function generateMetadata({
   const { username } = await params;
   const p = await getProfile(decodeURIComponent(username));
   if (!p?.username) {
-    return { title: "The Gaffer" };
+    return { title: "Pitch Gods" };
   }
-  const title = `${p.username} · ${p.glory} Glory — The Gaffer`;
+  const title = `${p.username} · ${p.glory} Glory — Pitch Gods`;
   const description = `${p.username} is on ${p.glory} Glory (Lv ${p.level}). Think you can out-predict them? Play free.`;
   const image = ogUrl(p.username, p.glory, p.level);
   return {
@@ -63,7 +63,7 @@ export default async function PublicProfile({
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-6 py-16 text-center">
         <h1 className="text-2xl font-black">Manager not found</h1>
         <Link href="/" className="mt-6 text-pitch underline">
-          Play The Gaffer
+          Play Pitch Gods
         </Link>
       </main>
     );
@@ -74,7 +74,7 @@ export default async function PublicProfile({
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-12">
       <span className="text-center text-xs font-medium uppercase tracking-widest text-pitch">
-        The Gaffer
+        Pitch Gods
       </span>
 
       <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.03] p-8 text-center">
@@ -98,7 +98,7 @@ export default async function PublicProfile({
         </Link>
         <ShareButton
           url={profileUrl}
-          text={`I'm on ${p.glory} Glory in The Gaffer. Out-predict me 👀`}
+          text={`I'm on ${p.glory} Glory in Pitch Gods. Out-predict me 👀`}
           variant="ghost"
           label="Share my card"
         />

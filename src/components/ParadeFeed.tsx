@@ -128,7 +128,7 @@ function Card({
         </button>
         <ShareButton
           url={SITE_URL}
-          text={`${p.headline} — The Gaffer 🔥`}
+          text={`${p.headline} — Pitch Gods 🔥`}
           label="Share"
           variant="ghost"
         />

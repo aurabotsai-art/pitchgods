@@ -52,7 +52,7 @@ export default async function HomePage() {
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-10">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium uppercase tracking-widest text-pitch">
-          The Gaffer
+          Pitch Gods
         </span>
         {profile?.is_guest && (
           <span className="rounded-full border border-glory/40 bg-glory/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-glory">
@@ -172,7 +172,7 @@ export default async function HomePage() {
         <div className="mt-3">
           <ShareButton
             url={`${SITE_URL}/u/${encodeURIComponent(profile.username)}`}
-            text={`I'm on ${profile.glory ?? 0} Glory in The Gaffer. Out-predict me 👀`}
+            text={`I'm on ${profile.glory ?? 0} Glory in Pitch Gods. Out-predict me 👀`}
             label="Challenge a friend on WhatsApp"
             variant="ghost"
           />

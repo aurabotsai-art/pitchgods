@@ -18,11 +18,11 @@ const SITE_URL =
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "THE GAFFER — out-predict your friends",
+  title: "PITCH GODS — out-predict your friends",
   description:
     "The free, real-time World Cup 2026 prediction game. Out-predict your friends, climb from nobody to legend. No money, pure glory.",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "The Gaffer" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Pitch Gods" },
 };
 
 export const viewport: Viewport = {

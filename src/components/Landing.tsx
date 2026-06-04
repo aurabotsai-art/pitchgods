@@ -46,9 +46,9 @@ export function Landing() {
         </span>
 
         <h1 className="text-5xl font-black leading-[0.95] tracking-tight sm:text-6xl">
-          THE
+          PITCH
           <br />
-          <span className="text-pitch">GAFFER</span>
+          <span className="text-pitch">GODS</span>
         </h1>
 
         <p className="mt-6 text-lg leading-7 text-zinc-400">
