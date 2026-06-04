@@ -6,7 +6,7 @@ import { ShareButton } from "@/components/ShareButton";
 export const dynamic = "force-dynamic";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchperfect-sooty.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchgods.com";
 
 async function getProfile(username: string) {
   const supabase = await createClient();

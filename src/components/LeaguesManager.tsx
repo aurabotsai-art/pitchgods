@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { track } from "@vercel/analytics";
 import { createLeague, joinLeague } from "@/app/leagues/actions";
 
 export function LeaguesManager() {
@@ -16,8 +17,10 @@ export function LeaguesManager() {
     if (!name.trim()) return setMsg({ ok: false, text: "Name your league." });
     start(async () => {
       const res = await createLeague(name);
-      if (res.ok && res.id) router.push(`/leagues/${res.id}`);
-      else setMsg({ ok: false, text: res.error ?? "Failed." });
+      if (res.ok && res.id) {
+        track("league_created");
+        router.push(`/leagues/${res.id}`);
+      } else setMsg({ ok: false, text: res.error ?? "Failed." });
     });
   }
 
@@ -26,8 +29,10 @@ export function LeaguesManager() {
     if (!code.trim()) return setMsg({ ok: false, text: "Enter a code." });
     start(async () => {
       const res = await joinLeague(code);
-      if (res.ok && res.id) router.push(`/leagues/${res.id}`);
-      else setMsg({ ok: false, text: res.error ?? "Failed." });
+      if (res.ok && res.id) {
+        track("league_joined");
+        router.push(`/leagues/${res.id}`);
+      } else setMsg({ ok: false, text: res.error ?? "Failed." });
     });
   }
 

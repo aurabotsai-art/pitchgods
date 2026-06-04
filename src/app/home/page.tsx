@@ -15,7 +15,7 @@ import { tierForGlory } from "@/lib/tiers";
 import { setUsername, signOut } from "./actions";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchperfect-sooty.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchgods.com";
 
 export default async function HomePage() {
   const supabase = await createClient();

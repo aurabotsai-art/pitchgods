@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { track } from "@vercel/analytics";
 import { Turnstile, captchaEnabled } from "./Turnstile";
 
 export function Landing() {
@@ -37,12 +38,14 @@ export function Landing() {
       setCaptchaToken(null); // force a fresh token on retry
       return;
     }
+    track("guest_signup");
     router.push("/home");
     router.refresh();
   }
 
   async function continueWithGoogle() {
     setErr(null);
+    track("signin_google_click");
     const supabase = createClient();
     const redirectTo = `${window.location.origin}/auth/callback`;
     const {

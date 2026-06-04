@@ -1,7 +1,7 @@
 import { ShareButton } from "@/components/ShareButton";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchperfect-sooty.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchgods.com";
 
 export type Rivalry = {
   rival: { name: string; glory: number } | null;

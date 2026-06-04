@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { track } from "@vercel/analytics";
 import { createParty, type PartyKind } from "@/app/parties/actions";
 
 const KINDS: { id: PartyKind; label: string; icon: string; hint: string }[] = [
@@ -46,8 +47,10 @@ export function PartyHost({
         startsAt: iso,
         fixtureId: fixtureId ? Number(fixtureId) : null,
       });
-      if (res.ok && res.id) router.push(`/parties/${res.id}`);
-      else setMsg(res.error ?? "Failed.");
+      if (res.ok && res.id) {
+        track("party_hosted", { kind });
+        router.push(`/parties/${res.id}`);
+      } else setMsg(res.error ?? "Failed.");
     });
   }
 

@@ -11,7 +11,7 @@ import { cancelParty } from "@/app/parties/actions";
 export const dynamic = "force-dynamic";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchperfect-sooty.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchgods.com";
 
 const KIND_META: Record<string, { icon: string; label: string }> = {
   watch_party: { icon: "🍿", label: "Watch party" },
