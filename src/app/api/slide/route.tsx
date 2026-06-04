@@ -2,14 +2,14 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-// 1080x1080 Instagram carousel slide renderer (Satori-safe: flex-only,
-// hex gradient stops, no absolute positioning).
+// 1080x1080 Instagram carousel slide renderer.
+// Text divs are plain blocks (NOT display:flex) so long headlines wrap.
 // Params: t=title, s=subtitle, k=kicker, i=index, n=total, v=variant(pitch|glory)
 export async function GET(req: Request) {
   const p = new URL(req.url).searchParams;
   const title = (p.get("t") ?? "Pitch Gods").slice(0, 120);
   const subtitle = (p.get("s") ?? "").slice(0, 160);
-  const kicker = (p.get("k") ?? "WORLD CUP 2026").slice(0, 28);
+  const kicker = (p.get("k") ?? "WORLD CUP 2026").slice(0, 28).toUpperCase();
   const i = Math.max(1, Math.min(20, Number(p.get("i") ?? "1")));
   const n = Math.max(1, Math.min(20, Number(p.get("n") ?? "1")));
   const gold = (p.get("v") ?? "pitch") === "glory";
@@ -21,6 +21,7 @@ export async function GET(req: Request) {
 
   const L = title.length;
   const titleSize = L <= 16 ? 128 : L <= 28 ? 104 : L <= 44 ? 82 : L <= 70 ? 64 : 52;
+  const counter = `${String(i).padStart(2, "0")} / ${String(n).padStart(2, "0")}`;
 
   return new ImageResponse(
     (
@@ -62,62 +63,24 @@ export async function GET(req: Request) {
             >
               PG
             </div>
-            <div
-              style={{
-                fontSize: "28px",
-                fontWeight: 800,
-                letterSpacing: "6px",
-                color: accent,
-              }}
-            >
+            <div style={{ fontSize: "28px", fontWeight: 800, letterSpacing: "6px", color: accent }}>
               PITCH GODS
             </div>
           </div>
-          <div
-            style={{
-              fontSize: "28px",
-              fontWeight: 800,
-              letterSpacing: "3px",
-              color: "#71717a",
-            }}
-          >
-            {String(i).padStart(2, "0")} / {String(n).padStart(2, "0")}
+          <div style={{ fontSize: "28px", fontWeight: 800, letterSpacing: "3px", color: "#71717a" }}>
+            {counter}
           </div>
         </div>
 
-        {/* center: kicker + title + subtitle */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              display: "flex",
-              fontSize: "32px",
-              fontWeight: 800,
-              letterSpacing: "5px",
-              color: accent,
-              marginBottom: "30px",
-            }}
-          >
-            {kicker.toUpperCase()}
+        {/* center: kicker + title + subtitle (plain text blocks) */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
+          <div style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "5px", color: accent }}>
+            {kicker}
           </div>
-          <div
-            style={{
-              display: "flex",
-              fontSize: `${titleSize}px`,
-              fontWeight: 900,
-              lineHeight: 1.04,
-            }}
-          >
+          <div style={{ fontSize: `${titleSize}px`, fontWeight: 900, lineHeight: 1.04 }}>
             {title}
           </div>
-          <div
-            style={{
-              display: "flex",
-              fontSize: "42px",
-              lineHeight: 1.25,
-              color: "#c7ccc7",
-              marginTop: "30px",
-            }}
-          >
+          <div style={{ fontSize: "42px", lineHeight: 1.25, color: "#c7ccc7" }}>
             {subtitle}
           </div>
         </div>
@@ -130,12 +93,8 @@ export async function GET(req: Request) {
             justifyContent: "space-between",
           }}
         >
-          <div style={{ display: "flex", fontSize: "30px", fontWeight: 700, color: "#f4f7f4" }}>
-            pitchgods.com
-          </div>
-          <div style={{ display: "flex", fontSize: "28px", color: "#71717a" }}>
-            free · no betting · pure glory
-          </div>
+          <div style={{ fontSize: "30px", fontWeight: 700, color: "#f4f7f4" }}>pitchgods.com</div>
+          <div style={{ fontSize: "28px", color: "#71717a" }}>free · no betting · pure glory</div>
         </div>
       </div>
     ),
