@@ -117,6 +117,15 @@ export default async function HomePage() {
       >
         Today&apos;s matches →
       </Link>
+      <Link
+        href="/leagues"
+        className="mt-3 flex h-14 w-full items-center justify-between rounded-2xl border border-pitch/40 bg-pitch/10 px-5 text-base font-bold text-pitch transition active:scale-[0.98]"
+      >
+        <span>🏆 Private leagues</span>
+        <span className="text-xs font-medium text-zinc-400">
+          start one for your crew →
+        </span>
+      </Link>
       <div className="mt-3 grid grid-cols-2 gap-3">
         <Link
           href="/leaderboard"
