@@ -10,6 +10,7 @@ import { StreakControls } from "@/components/StreakControls";
 import { CountryPicker } from "@/components/CountryPicker";
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
 import { EnableNotifications } from "@/components/EnableNotifications";
+import { UserName } from "@/components/UserName";
 import { tierForGlory } from "@/lib/tiers";
 import { setUsername, signOut } from "./actions";
 
@@ -27,7 +28,7 @@ export default async function HomePage() {
     supabase
       .from("profiles")
       .select(
-        "username, glory, coins, level, streak_count, hot_streak, streak_freezes, flag_country, is_guest",
+        "username, glory, coins, level, streak_count, hot_streak, streak_freezes, flag_country, name_color, flair, is_guest",
       )
       .eq("id", uid)
       .single(),
@@ -62,7 +63,8 @@ export default async function HomePage() {
       </div>
 
       <h1 className="mt-6 text-3xl font-black tracking-tight">
-        Welcome, {name}.
+        Welcome,{" "}
+        <UserName name={name} color={profile?.name_color} flair={profile?.flair} />.
       </h1>
       <div className="mt-2 inline-flex w-fit items-center gap-2 rounded-full border border-pitch/40 bg-pitch/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-pitch">
         {tierForGlory(profile?.glory ?? 0).name}

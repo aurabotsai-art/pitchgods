@@ -108,6 +108,16 @@ export function Landing() {
         <p className="mt-8 text-xs text-zinc-600">
           Play instantly — no signup. Convert later to keep your legend.
         </p>
+        <p className="mt-4 text-[11px] text-zinc-700">
+          <a href="/privacy" className="hover:text-zinc-500">
+            Privacy
+          </a>{" "}
+          ·{" "}
+          <a href="/terms" className="hover:text-zinc-500">
+            Terms
+          </a>{" "}
+          · No betting. No money. Pure glory.
+        </p>
       </div>
     </main>
   );

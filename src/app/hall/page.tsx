@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createPublicClient } from "@/lib/supabase/public";
+import { UserName } from "@/components/UserName";
 import { tierForGlory } from "@/lib/tiers";
 
 export const revalidate = 60;
@@ -10,7 +11,7 @@ export default async function HallPage() {
   const [{ data: legends }, { data: parades }, { data: clubs }] = await Promise.all([
     sb
       .from("profiles")
-      .select("username, glory")
+      .select("username, glory, name_color, flair")
       .order("glory", { ascending: false })
       .limit(10),
     sb
@@ -65,7 +66,11 @@ export default async function HallPage() {
                 </span>
                 <span className="min-w-0 flex-1 truncate">
                   <span className="text-sm font-bold">
-                    {l.username ?? "Guest manager"}
+                    <UserName
+                      name={l.username ?? "Guest manager"}
+                      color={l.name_color as string | null}
+                      flair={l.flair as string | null}
+                    />
                   </span>
                   <span className="block text-[10px] uppercase tracking-wide text-zinc-500">
                     {i === 0 ? "GOAT · " : ""}

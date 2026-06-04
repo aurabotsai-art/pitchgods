@@ -81,6 +81,8 @@ export type LbEntry = {
   glory: number;
   level: number;
   flag_country: string | null;
+  name_color: string | null;
+  flair: string | null;
 };
 
 export type Chaos = {
@@ -195,7 +197,7 @@ export const getGlobalLeaderboard = unstable_cache(
     const sb = createPublicClient();
     const { data } = await sb
       .from("profiles")
-      .select("id, username, glory, level, flag_country")
+      .select("id, username, glory, level, flag_country, name_color, flair")
       .order("glory", { ascending: false })
       .limit(50);
     return (data ?? []) as LbEntry[];

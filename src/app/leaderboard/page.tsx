@@ -4,6 +4,7 @@ import { getGlobalLeaderboard, getCountryLeaderboard, type CountryRow } from "@/
 import { AddFriend } from "@/components/AddFriend";
 import { SponsorSlot } from "@/components/SponsorSlot";
 import { Flag } from "@/components/Flag";
+import { UserName } from "@/components/UserName";
 import { tierForGlory } from "@/lib/tiers";
 import { COUNTRY_NAME } from "@/lib/countries";
 
@@ -15,6 +16,8 @@ type Entry = {
   glory: number;
   level: number;
   flag_country: string | null;
+  name_color: string | null;
+  flair: string | null;
 };
 
 export default async function LeaderboardPage({
@@ -44,7 +47,7 @@ export default async function LeaderboardPage({
     const ids = [uid, ...(fr ?? []).map((r) => r.friend_id as string)];
     const { data } = await supabase
       .from("profiles")
-      .select("id, username, glory, level, flag_country")
+      .select("id, username, glory, level, flag_country, name_color, flair")
       .in("id", ids)
       .order("glory", { ascending: false });
     entries = (data ?? []) as Entry[];
@@ -150,7 +153,8 @@ function Row({ e, rank, isMe }: { e: Entry; rank: number; isMe: boolean }) {
       {e.flag_country && <Flag slug={e.flag_country} size={18} />}
       <span className="min-w-0 flex-1 truncate">
         <span className="text-sm font-semibold">
-          {name} {isMe && <span className="text-xs text-pitch">(you)</span>}
+          <UserName name={name} color={e.name_color} flair={e.flair} />{" "}
+          {isMe && <span className="text-xs text-pitch">(you)</span>}
         </span>
         <span className="block text-[10px] uppercase tracking-wide text-zinc-500">
           {tier.name}
