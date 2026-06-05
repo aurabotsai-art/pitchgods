@@ -5,6 +5,12 @@ import { PartyHost } from "@/components/PartyHost";
 import { LocalTime } from "@/components/LocalTime";
 
 export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Watch Parties — host a World Cup 2026 watch party",
+  description:
+    "Host or join World Cup 2026 watch parties, parades and raids on Pitch Gods. Drop the plan and location, whoever comes comes. Free.",
+  alternates: { canonical: "/parties" },
+};
 
 const KIND_META: Record<string, { icon: string; label: string }> = {
   watch_party: { icon: "🍿", label: "Watch party" },

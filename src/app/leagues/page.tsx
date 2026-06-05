@@ -4,6 +4,12 @@ import { GuestButton } from "@/components/GuestButton";
 import { LeaguesManager } from "@/components/LeaguesManager";
 
 export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Private Leagues — World Cup 2026 prediction league for your crew",
+  description:
+    "Create a free private World Cup 2026 prediction league. Share a join code with your friends, uni or group chat and compete on your own leaderboard. No betting.",
+  alternates: { canonical: "/leagues" },
+};
 
 export default async function LeaguesPage() {
   const supabase = await createClient();

@@ -4,6 +4,12 @@ import { UserName } from "@/components/UserName";
 import { tierForGlory } from "@/lib/tiers";
 
 export const revalidate = 60;
+export const metadata = {
+  title: "Hall of Fame — Pitch Gods World Cup legends",
+  description:
+    "The Pitch Gods Hall of Fame: the top World Cup 2026 predictors, biggest calls and top clubs. Free, halal prediction game.",
+  alternates: { canonical: "/hall" },
+};
 
 export default async function HallPage() {
   const sb = createPublicClient();

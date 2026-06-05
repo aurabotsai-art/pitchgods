@@ -9,6 +9,12 @@ import { tierForGlory } from "@/lib/tiers";
 import { COUNTRY_NAME } from "@/lib/countries";
 
 export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Leaderboard — World Cup 2026 prediction rankings",
+  description:
+    "The global Pitch Gods leaderboard — top World Cup 2026 predictors, country-vs-country rankings and tiers. Free, halal, no betting.",
+  alternates: { canonical: "/leaderboard" },
+};
 
 type Entry = {
   id: string;
