@@ -133,6 +133,16 @@ export function Landing() {
         <p className="mt-8 text-xs text-zinc-500">
           Play instantly — no signup. Convert later to keep your legend.
         </p>
+        <nav className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-[11px] text-zinc-500">
+          <a href="/matches" className="hover:text-zinc-300">Matches</a>
+          <a href="/leagues" className="hover:text-zinc-300">Leagues</a>
+          <a href="/leaderboard" className="hover:text-zinc-300">Leaderboard</a>
+          <a href="/hall" className="hover:text-zinc-300">Hall of Fame</a>
+          <a href="/rewards" className="hover:text-zinc-300">Rewards</a>
+          <a href="/halal" className="hover:text-zinc-300">Halal game</a>
+          <a href="/rules" className="hover:text-zinc-300">How to play</a>
+          <a href="/faq" className="hover:text-zinc-300">FAQ</a>
+        </nav>
         <p className="mt-4 text-[11px] text-zinc-600">
           <a href="/privacy" className="hover:text-zinc-400">
             Privacy

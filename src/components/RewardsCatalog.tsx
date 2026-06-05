@@ -30,6 +30,12 @@ export function RewardsCatalog({
   function confirm() {
     if (!selected) return;
     setMsg(null);
+    if (coins < selected.points_cost) {
+      return setMsg({
+        ok: false,
+        text: `Not enough coins — you need ${(selected.points_cost - coins).toLocaleString()} more.`,
+      });
+    }
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
       return setMsg({ ok: false, text: "Enter a valid email." });
     }
@@ -131,10 +137,14 @@ export function RewardsCatalog({
               </button>
               <button
                 onClick={confirm}
-                disabled={pending}
+                disabled={pending || coins < selected.points_cost}
                 className="btn-gold h-12 flex-[2] rounded-xl text-sm disabled:opacity-60"
               >
-                {pending ? "Redeeming…" : "Confirm redemption"}
+                {pending
+                  ? "Redeeming…"
+                  : coins < selected.points_cost
+                    ? `Need ${(selected.points_cost - coins).toLocaleString()} more coins`
+                    : "Confirm redemption"}
               </button>
             </div>
             <p className="mt-3 text-[11px] leading-snug text-zinc-600">

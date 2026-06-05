@@ -29,7 +29,7 @@ export default async function RewardsPage() {
 
   const [{ data: profile }, { data: tiers }, { data: history }] =
     await Promise.all([
-      sb.from("profiles").select("username, coins").eq("id", uid).single(),
+      sb.from("profiles").select("username, coins, is_guest").eq("id", uid).single(),
       sb
         .from("reward_tiers")
         .select("id, label, points_cost, voucher_value_pkr")
@@ -74,6 +74,17 @@ export default async function RewardsPage() {
         </div>
         <span className="text-4xl">🪙</span>
       </div>
+
+      {profile?.is_guest && (
+        <div className="mt-4 rounded-2xl border border-glory/30 bg-glory/5 p-4 text-sm">
+          <p className="font-semibold text-glory">Playing as a guest</p>
+          <p className="mt-1 text-zinc-300">
+            You can earn and see coins, but{" "}
+            <strong>redeeming vouchers requires a full account</strong>. Sign in
+            with Google (your coins carry over) to redeem.
+          </p>
+        </div>
+      )}
 
       <h2 className="mt-8 text-sm font-bold uppercase tracking-wide text-zinc-300">
         Voucher catalog
