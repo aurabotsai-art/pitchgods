@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GuestButton } from "@/components/GuestButton";
@@ -18,6 +19,32 @@ const KIND_META: Record<string, { icon: string; label: string }> = {
   parade: { icon: "🎉", label: "Parade" },
   raid: { icon: "⚔️", label: "Raid" },
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const sb = await createClient();
+  const { data: p } = await sb
+    .from("parties")
+    .select("title, kind, location")
+    .eq("id", Number(id))
+    .maybeSingle();
+  if (!p) return { title: "Party · Pitch Gods" };
+  const meta = KIND_META[p.kind as string] ?? KIND_META.watch_party;
+  const title = `${p.title} — Pitch Gods ${meta.label}`;
+  const description = `${meta.label} at ${p.location}. Join the World Cup 2026 watch party on Pitch Gods — whoever comes comes.`;
+  const og = `/api/og?${new URLSearchParams({ name: String(p.title).slice(0, 24), tag: meta.label }).toString()}`;
+  return {
+    title,
+    description,
+    alternates: { canonical: `/parties/${id}` },
+    openGraph: { title, description, images: [og] },
+    twitter: { card: "summary_large_image", title, description, images: [og] },
+  };
+}
 
 export default async function PartyPage({
   params,

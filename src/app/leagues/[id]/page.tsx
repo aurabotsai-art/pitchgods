@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { GuestButton } from "@/components/GuestButton";
@@ -11,6 +12,31 @@ export const dynamic = "force-dynamic";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchgods.com";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const sb = await createClient();
+  const { data: l } = await sb
+    .from("leagues")
+    .select("name, code")
+    .eq("id", Number(id))
+    .maybeSingle();
+  if (!l) return { title: "League · Pitch Gods" };
+  const title = `Join ${l.name} — Pitch Gods league`;
+  const description = `${l.name} is playing the free, halal World Cup 2026 prediction game. Join with code ${l.code} and out-predict your crew. No betting, pure glory.`;
+  const og = `/api/og?${new URLSearchParams({ name: String(l.name).slice(0, 24), tag: `Join code ${l.code}` }).toString()}`;
+  return {
+    title,
+    description,
+    alternates: { canonical: `/leagues/${id}` },
+    openGraph: { title, description, images: [og] },
+    twitter: { card: "summary_large_image", title, description, images: [og] },
+  };
+}
 
 export default async function LeaguePage({
   params,
