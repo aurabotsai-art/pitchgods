@@ -7,8 +7,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // don't index API routes, auth callback, or per-user app screens
-      disallow: ["/api/", "/auth/", "/home", "/shop", "/agent", "/predict"],
+      // don't index API routes, auth callback, per-user app screens, or
+      // referral-tagged URLs (?ref=) which create duplicate crawl bloat
+      disallow: ["/api/", "/auth/", "/home", "/shop", "/agent", "/predict", "/*?ref="],
     },
     sitemap: `${SITE}/sitemap.xml`,
     host: SITE,
