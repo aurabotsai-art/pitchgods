@@ -32,9 +32,7 @@ export function SponsorCard({ sponsor }: { sponsor: Sponsor }) {
         <img
           src={sponsor.logo_url}
           alt={sponsor.name}
-          width={36}
-          height={36}
-          className="h-9 w-9 rounded-lg object-contain"
+          className="h-8 w-auto max-w-[120px] object-contain"
         />
       ) : (
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-pitch/20 text-sm font-black text-pitch">
