@@ -180,6 +180,13 @@ export default async function HomePage() {
         <span className="font-display font-bold tabular-nums text-glory">{profile?.coins ?? 0} coins →</span>
       </Link>
       <Link
+        href="/rewards"
+        className="card card-glow-glory mt-3 flex h-14 w-full items-center justify-between px-5 text-base font-semibold text-glory transition active:scale-[0.98]"
+      >
+        <span>🎁 Rewards — redeem for vouchers</span>
+        <span className="text-xs text-zinc-400">iShopping.pk →</span>
+      </Link>
+      <Link
         href="/agent"
         className="card card-glow-glory mt-3 flex h-14 w-full items-center justify-between px-5 text-base font-semibold text-pitch-bright transition active:scale-[0.98]"
       >
