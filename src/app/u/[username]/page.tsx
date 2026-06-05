@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ShareButton } from "@/components/ShareButton";
 
@@ -37,7 +38,7 @@ export async function generateMetadata({
   const { username } = await params;
   const p = await getProfile(decodeURIComponent(username));
   if (!p?.username) {
-    return { title: "Pitch Gods" };
+    return { title: "Manager not found · Pitch Gods", robots: { index: false } };
   }
   const title = `${p.username} · ${p.glory} Glory — Pitch Gods`;
   const description = `${p.username} is on ${p.glory} Glory (Lv ${p.level}). Think you can out-predict them? Play free.`;
@@ -45,6 +46,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: { canonical: `/u/${encodeURIComponent(p.username)}` },
     openGraph: { title, description, images: [image] },
     twitter: { card: "summary_large_image", title, description, images: [image] },
   };
@@ -58,16 +60,7 @@ export default async function PublicProfile({
   const { username } = await params;
   const p = await getProfile(decodeURIComponent(username));
 
-  if (!p?.username) {
-    return (
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center px-6 py-16 text-center">
-        <h1 className="text-2xl font-black">Manager not found</h1>
-        <Link href="/" className="mt-6 text-pitch underline">
-          Play Pitch Gods
-        </Link>
-      </main>
-    );
-  }
+  if (!p?.username) notFound(); // real 404 instead of soft-200
 
   const profileUrl = `${SITE_URL}/u/${encodeURIComponent(p.username)}`;
 
