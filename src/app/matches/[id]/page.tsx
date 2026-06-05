@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getFixture, getTeamsMap } from "@/lib/data";
@@ -10,6 +11,28 @@ import { GuestButton } from "@/components/GuestButton";
 import { LiveRoom } from "@/components/LiveRoom";
 
 export const dynamic = "force-dynamic";
+
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://pitchgods.com";
+
+// "{Home} vs {Away} prediction" — the highest-volume organic SEO surface
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const f = await getFixture(Number(id));
+  if (!f) return { title: "Match prediction" };
+  const title = `${f.home_name} vs ${f.away_name} Prediction — World Cup 2026`;
+  const description = `Predict ${f.home_name} vs ${f.away_name} at the 2026 World Cup. Make your call free on Pitch Gods — no betting, just glory. See the community pick and climb the leaderboard.`;
+  return {
+    title,
+    description,
+    alternates: { canonical: `/matches/${id}` },
+    openGraph: { title, description, url: `${SITE}/matches/${id}` },
+    twitter: { card: "summary_large_image", title, description },
+  };
+}
 
 type PredRow = {
   type_key: string;
@@ -142,8 +165,32 @@ export default async function MatchPage({
     }
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    name: `${f.home_name} vs ${f.away_name}`,
+    sport: "Soccer",
+    startDate: f.kickoff_at,
+    eventStatus: finished
+      ? "https://schema.org/EventCompleted"
+      : "https://schema.org/EventScheduled",
+    competitor: [
+      { "@type": "SportsTeam", name: f.home_name },
+      { "@type": "SportsTeam", name: f.away_name },
+    ],
+    superEvent: { "@type": "SportsEvent", name: "FIFA World Cup 2026" },
+    url: `${SITE}/matches/${fixtureId}`,
+  };
+
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-6 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <h1 className="sr-only">
+        {f.home_name} vs {f.away_name} prediction — World Cup 2026
+      </h1>
       <Link href="/matches" className="text-sm text-zinc-500" prefetch>
         ← Matches
       </Link>
